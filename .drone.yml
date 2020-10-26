@@ -26,7 +26,7 @@ pipeline:
       - FMS_URL="http://fms.notprod.dq.homeoffice.gov.uk"
       - CRT_URL="http://crt-acp.notprod.dq.homeoffice.gov.uk"
       - GAIT-URL="http://gait.notprod.dq.homeoffice.gov.uk"
-      # - HOSTNAME=monitor.notprod.dq.homeoffice.gov.uk
+      - HOSTNAME=monitor.notprod.dq.homeoffice.gov.uk
       # - GF_AWS_NOTPROD_ACCESS_KEY_ID=${GF_AWS_NOTPROD_ACCESS_KEY_ID}
       # - GF_AWS_NOTPROD_SECRET_ACCESS_KEY=${GF_AWS_NOTPROD_SECRET_ACCESS_KEY}
 
@@ -40,10 +40,8 @@ pipeline:
       - export KUBE_SERVER=$$NOTPROD_KUBE_SERVER
       # - export WHITELIST_RANGES=$$NOTPROD_WHITELIST_RANGES
       - |
-        kd --file pvc.yml \
-          --file deployment.yml \
-          --file service.yml \
-          --file network-policy.yml
+        kd --file pvc.yml --file service.yml --file network-policy.yml --file deployment.yml
+
     when:
       event: push
 
