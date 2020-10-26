@@ -75,7 +75,7 @@ pipeline:
       - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
       - export KUBE_SERVER=$$PROD_KUBE_SERVER
       - |
-        kd --delete --file pvc.yml --file service.yml --file network-policy.yml --file deployment.yml
+        kd --delete --file deployment.yml
 
     when:
       environment: delete
