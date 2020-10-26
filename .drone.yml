@@ -20,7 +20,7 @@ pipeline:
     image: quay.io/ukhomeofficedigital/kd
     environment:
       - ENV=notprod
-      - KUBE_NAMESPACE=dq-management-notprod
+      - KUBE_NAMESPACE=dq-apps-notprod
       - INSECURE_SKIP_TLS_VERIFY=true
       - VOLUME_SIZE=10Gi
       - FMS_URL="http://fms.notprod.dq.homeoffice.gov.uk"
