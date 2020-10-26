@@ -42,7 +42,7 @@ spec:
         ports:
           - containerPort: 8000
         volumeMounts:
-          - mountPath: /APP
+          - mountPath: /APP/share
             name: dq-monitor-storage
 
       volumes:
