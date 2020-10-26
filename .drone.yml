@@ -1,7 +1,7 @@
 
 
 pipeline:
-  build_grafana:
+  build_monitor_image:
     image: ukhomeoffice/drone-docker
     repo: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard
     secrets: [ docker_username, docker_password ]
