@@ -37,13 +37,13 @@ spec:
         env:
           - name: FMS_URL
             {{ if eq .ENV "notprod" }}value: 'http://fms.notprod.dq.homeoffice.gov.uk'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'http://fms.dq.homeoffice.gov.uk'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://fms:3000'{{ end }}
           - name: CRT_URL
             {{ if eq .ENV "notprod" }}value: 'http://crt-acp.notprod.dq.homeoffice.gov.uk'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'http://crt.prod.dq.homeoffice.gov.uk'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://crt-service:10443'{{ end }}
           - name: GAIT_URL
             {{ if eq .ENV "notprod" }}value: 'http://gait.notprod.dq.homeoffice.gov.uk'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'http://gait.dq.homeoffice.gov.uk'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://ga-app-service:3000'{{ end }}
         ports:
           - containerPort: 8000
         volumeMounts:
