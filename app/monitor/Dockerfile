@@ -9,7 +9,7 @@ RUN apk add --no-cache --quiet --update
 
 RUN mkdir -p /APP/scripts
 
-COPY app/monitor/scripts/ /APP
+COPY app/monitor/scripts/ /APP/scripts
 
 RUN adduser -D -H 1000 && chown -R 1000 /APP
 
