@@ -58,3 +58,26 @@ pipeline:
       environment: production
       branch: master
       event: deployment
+
+  delete_prod:
+    image: quay.io/ukhomeofficedigital/kd
+    environment:
+      - ENV=prod
+      - KUBE_NAMESPACE=dq-apps
+      - INSECURE_SKIP_TLS_VERIFY=true
+      - VOLUME_SIZE=10Gi
+
+    secrets:
+      - PROD_KUBE_TOKEN
+      - PROD_KUBE_SERVER
+
+    commands:
+      - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
+      - export KUBE_SERVER=$$PROD_KUBE_SERVER
+      - |
+        kd --delete --file pvc.yml --file service.yml --file network-policy.yml --file deployment.yml
+
+    when:
+      environment: delete
+      branch: master
+      event: deployment
