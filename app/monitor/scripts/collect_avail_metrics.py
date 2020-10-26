@@ -16,9 +16,12 @@ out_hdlr.setLevel(logging.INFO)
 log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
+username = os.environ.get('VARENV')
+
 service_list= [
-    {"name": "fms", "url": "http://fms.notprod.dq.homeoffice.gov.uk"},
-    {"name": "crt", "url": "http://crt-acp.notprod.dq.homeoffice.gov.uk"}
+    {"name": "gait", "url": os.environ.get('GAIT_URL')},
+    {"name": "fms", "url": os.environ.get('FMS_URL')},
+    {"name": "crt", "url": os.environ.get('FMS_URL')}
     ]
 
 dic_list = []
@@ -32,9 +35,9 @@ def obtain_http_code(url_name, url):
     try:
         http_status = requests.get(url).status_code
         if http_status == 200:
-            status = 1
-        else:
             status = 0
+        else:
+            status = 2
         dic_item = { 'name': url_name , 'status': status}
         dic_list.append(dic_item)
         log.info("Obtained the Availability status of "+url_name)

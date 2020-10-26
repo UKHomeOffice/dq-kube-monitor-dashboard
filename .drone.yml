@@ -23,6 +23,9 @@ pipeline:
       - KUBE_NAMESPACE=dq-management-notprod
       - INSECURE_SKIP_TLS_VERIFY=true
       - VOLUME_SIZE=10Gi
+      - FMS_URL="http://fms.notprod.dq.homeoffice.gov.uk"
+      - CRT_URL="http://crt-acp.notprod.dq.homeoffice.gov.uk"
+      - GAIT-URL="http://gait.notprod.dq.homeoffice.gov.uk"
       # - HOSTNAME=monitor.notprod.dq.homeoffice.gov.uk
       # - GF_AWS_NOTPROD_ACCESS_KEY_ID=${GF_AWS_NOTPROD_ACCESS_KEY_ID}
       # - GF_AWS_NOTPROD_SECRET_ACCESS_KEY=${GF_AWS_NOTPROD_SECRET_ACCESS_KEY}
