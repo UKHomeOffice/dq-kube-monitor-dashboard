@@ -3,12 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dq-monitor
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "8000"
-    prometheus.io/path: "/dq-monitor/prometheus"
-    environment: {{ .ENV }}
-    {{ if eq .ENV "notprod" }}downscaler/uptime: Mon-Fri 07:00-18:30 Europe/London{{ end }}
 spec:
   replicas: 1
   selector:
@@ -19,6 +13,10 @@ spec:
     metadata:
       labels:
         name: dq-monitor
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/dq-monitor/prometheus"
     spec:
       securityContext:
         runAsUser: 1000
