@@ -17,12 +17,12 @@ log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
 service_list= [
-    # {"name": "gait", "url": os.environ.get('GAIT_URL')},
-    # {"name": "fms", "url": os.environ.get('FMS_URL')},
-    # {"name": "crt", "url": os.environ.get('CRT_URL')}
-        {"name": "gait", "url": "http://ga-app-service:3000"},
-        {"name": "fms", "url": "http://fms:3000"},
-        {"name": "crt", "url": "http://crt-acp.notprod.dq.homeoffice.gov.uk"}
+    {"name": "gait", "url": os.environ.get('GAIT_URL')},
+    {"name": "fms", "url": os.environ.get('FMS_URL')},
+    {"name": "crt", "url": os.environ.get('CRT_URL')}
+        # {"name": "gait", "url": "http://ga-app-service:3000"},
+        # {"name": "fms", "url": "http://fms:3000"},
+        # {"name": "crt", "url": "http://crt-acp.notprod.dq.homeoffice.gov.uk"}
     ]
 
 dic_list = []
