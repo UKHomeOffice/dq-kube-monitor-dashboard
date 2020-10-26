@@ -6,7 +6,7 @@ metadata:
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
-    prometheus.io/path: "/tracing-feeds/prometheus"
+    prometheus.io/path: "/dq-monitor/prometheus"
     environment: {{ .ENV }}
     {{ if eq .ENV "notprod" }}downscaler/uptime: Mon-Fri 07:00-18:30 Europe/London{{ end }}
 spec:

@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 class StoreHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/tracing-feeds/prometheus':
+        if self.path == '/dq-monitor/prometheus':
             with open('/APP/scripts/tracing.json') as fh:
                 self.send_response(200)
                 self.send_header('Content-type', 'text/json')

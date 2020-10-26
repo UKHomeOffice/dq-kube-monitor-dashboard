@@ -66,7 +66,6 @@ def write_to_json():
         print("dic_list is: ",dic_list)
         for item in dic_list:
                 f.write("# HELP Availability_of_"+item['name']+ " to check the URL uptime \n")
-                f.write("# TYPE Availability_of_"+item['name'] + " is string" + "\n")
                 f.write("Availability_of_"+item['name']+" "+str(item['status'])+ "\n")
         f.close()
         log.info("File created")
