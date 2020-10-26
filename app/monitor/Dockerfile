@@ -9,11 +9,7 @@ RUN apk add --no-cache --quiet --update
 
 RUN mkdir -p /APP/scripts
 
-COPY app/monitor/scripts/collect_avail_metrics.py /APP/scripts/
-
-COPY app/monitor/scripts/prom_web_expose.py /APP/scripts/
-
-COPY app/monitor/scripts/run.sh /APP/scripts/
+ADD scripts /APP/scripts/
 
 RUN adduser -D -H 1000 && \
     chown -R 1000 /APP && \
