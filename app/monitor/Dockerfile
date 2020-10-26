@@ -12,9 +12,7 @@ RUN mkdir -p /APP/scripts
 
 ADD scripts /APP/scripts/
 
-RUN useradd -u $USERMAP_UID -r monitor
-
-RUN chown -R 1000 /APP
+RUN adduser -D -H 1000 && chown -R 1000 /APP
 
 RUN chmod -R +x /APP/scripts/
 
