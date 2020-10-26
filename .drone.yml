@@ -6,7 +6,6 @@ pipeline:
     repo: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard
     secrets: [ docker_username, docker_password ]
     registry: quay.io
-    context: app/monitor
     dockerfile: app/monitor/Dockerfile
     force_tag: true
     tags:
