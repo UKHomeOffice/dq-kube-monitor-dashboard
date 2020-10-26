@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dq-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: dq-monitor
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        name: dq-monitor
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/dq-monitor/prometheus"
+    spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: monitor
+        image: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard:{{ .DRONE_COMMIT_SHA }}
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+        resources:
+          limits:
+            cpu: 1.5
+            memory: 2Gi
+          requests:
+            cpu: 1
+            memory: 1Gi
+        env:
+          - name: FMS_URL
+            {{ if eq .ENV "notprod" }}value: 'http://fms.notprod.dq.homeoffice.gov.uk'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://fms.dq.homeoffice.gov.uk'{{ end }}
+          - name: CRT_URL
+            {{ if eq .ENV "notprod" }}value: 'http://crt-acp.notprod.dq.homeoffice.gov.uk'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://crt.prod.dq.homeoffice.gov.uk'{{ end }}
+          - name: GAIT_URL
+            {{ if eq .ENV "notprod" }}value: 'http://gait.notprod.dq.homeoffice.gov.uk'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://gait.dq.homeoffice.gov.uk'{{ end }}
+        ports:
+          - containerPort: 8000
+        volumeMounts:
+          - mountPath: /APP/share
+            name: dq-monitor-storage
+
+      volumes:
+        - name: dq-monitor-storage
+          persistentVolumeClaim:
+            claimName: dq-monitor-storage

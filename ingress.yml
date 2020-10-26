@@ -1,0 +1,25 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  labels:
+    cert-manager.io/solver: http01
+  annotations:
+    cert-manager.io/enabled: "true"
+    kubernetes.io/ingress.class: "nginx-external"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+  - hosts:
+    - {{ .HOSTNAME}}
+    secretName: grafana-tls-cmio
+  rules:
+  - host: {{ .HOSTNAME}}
+    http:
+      paths:
+      - backend:
+          serviceName: grafana-service
+          servicePort: https
+        path: /

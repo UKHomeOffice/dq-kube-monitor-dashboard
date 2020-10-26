@@ -1,0 +1,6 @@
+# HELP Availability_of_bbc to check the URL uptime 
+# TYPE Availability_of_bbc is string
+Availability_of_bbc 1
+# HELP Availability_of_google to check the URL uptime 
+# TYPE Availability_of_google is string
+Availability_of_google 1

@@ -1,0 +1,60 @@
+
+
+pipeline:
+  build_monitor_image:
+    image: ukhomeoffice/drone-docker
+    repo: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard
+    secrets: [ docker_username, docker_password ]
+    registry: quay.io
+    dockerfile: app/monitor/Dockerfile
+    force_tag: true
+    tags:
+      - latest
+      - ${DRONE_COMMIT_SHA}
+      - b${DRONE_BUILD_NUMBER}
+    when:
+      event: push
+
+  deploy_to_notprod:
+    image: quay.io/ukhomeofficedigital/kd
+    environment:
+      - ENV=notprod
+      - KUBE_NAMESPACE=dq-apps-notprod
+      - INSECURE_SKIP_TLS_VERIFY=true
+      - VOLUME_SIZE=10Gi
+
+    secrets:
+      - NOTPROD_KUBE_TOKEN
+      - NOTPROD_KUBE_SERVER
+
+    commands:
+      - export KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
+      - export KUBE_SERVER=$$NOTPROD_KUBE_SERVER
+      - |
+        kd --file pvc.yml --file service.yml --file network-policy.yml --file deployment.yml
+
+    when:
+      event: push
+
+  deploy_to_prod:
+    image: quay.io/ukhomeofficedigital/kd
+    environment:
+      - ENV=prod
+      - KUBE_NAMESPACE=dq-apps
+      - INSECURE_SKIP_TLS_VERIFY=true
+      - VOLUME_SIZE=10Gi
+
+    secrets:
+      - PROD_KUBE_TOKEN
+      - PROD_KUBE_SERVER
+
+    commands:
+      - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
+      - export KUBE_SERVER=$$PROD_KUBE_SERVER
+      - |
+        kd --file pvc.yml --file service.yml --file network-policy.yml --file deployment.yml
+
+    when:
+      environment: production
+      branch: master
+      event: deployment
