@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dq-monitor
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/tracing-feeds/prometheus"
+    environment: {{ .ENV }}
+    {{ if eq .ENV "notprod" }}downscaler/uptime: Mon-Fri 07:00-18:30 Europe/London{{ end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: dq-monitor
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        name: dq-monitor
+    spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: monitor
+        image: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard:{{ .DRONE_COMMIT_SHA }}
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+        resources:
+          limits:
+            cpu: 1.5
+            memory: 2Gi
+          requests:
+            cpu: 1
+            memory: 1Gi
+        env:
+          - name: SERVER_PORT
+            value: '8000'
+        ports:
+          - containerPort: 8000
+        volumeMounts:
+          - mountPath: /APP
+            name: dq-monitor-storage
+
+      volumes:
+        - name: dq-monitor-storage
+          persistentVolumeClaim:
+            claimName: dq-monitor-storage
