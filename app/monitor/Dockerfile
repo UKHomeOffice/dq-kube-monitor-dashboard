@@ -4,8 +4,6 @@ LABEL maintainer="dqdevops@digital.homeoffice.gov.uk"
 
 ENV USERMAP_UID 1000
 
-WORKDIR /APP
-
 RUN apk add --no-cache --quiet --update
 
 RUN mkdir -p /APP/scripts
