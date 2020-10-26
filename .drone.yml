@@ -43,7 +43,7 @@ pipeline:
         kd --file pvc.yml \
           --file deployment.yml \
           --file service.yml \
-          --file network-policy.yml \
+          --file network-policy.yml
     when:
       event: push
 
