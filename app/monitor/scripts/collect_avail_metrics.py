@@ -48,7 +48,7 @@ def obtain_http_code(url_name, url):
 
 def service_status_list():
     """
-    create a list of services and the  1  or 0 code
+    create a list of services and the  2  or 0 code
     """
     log.info("Starting to fetch the availability of each service....")
     dic_list.clear()
