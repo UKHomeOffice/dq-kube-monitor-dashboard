@@ -14,7 +14,7 @@ ADD scripts /APP/scripts/
 RUN adduser -D -H 1000 && \
     chown -R 1000 /APP && \
 
-RUN chmod -R +x scripts/
+RUN chmod -R +x /APP/scripts/
 
 RUN pip install boto3 schedule requests
 
