@@ -21,4 +21,4 @@ EXPOSE 8000
 
 USER ${USERMAP_UID}
 
-CMD sh /APP/scripts/run.sh
+CMD sh scripts/run.sh
