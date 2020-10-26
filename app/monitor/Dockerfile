@@ -10,8 +10,6 @@ RUN apk add --no-cache --quiet --update
 
 RUN mkdir -p /APP/scripts
 
-ADD scripts /APP/scripts/
-
 COPY scripts/collect_avail_metrics.py /APP/scripts/collect_avail_metrics.py
 RUN chmod +x /APP/scripts/scripts/collect_avail_metrics.py
 
