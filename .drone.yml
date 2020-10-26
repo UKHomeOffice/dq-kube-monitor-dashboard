@@ -24,7 +24,7 @@ pipeline:
       - VOLUME_SIZE=10Gi
       - FMS_URL="http://fms.notprod.dq.homeoffice.gov.uk"
       - CRT_URL="http://crt-acp.notprod.dq.homeoffice.gov.uk"
-      - GAIT-URL="http://gait.notprod.dq.homeoffice.gov.uk"
+      - GAIT_URL="http://gait.notprod.dq.homeoffice.gov.uk"
       - HOSTNAME=monitor.notprod.dq.homeoffice.gov.uk
       # - GF_AWS_NOTPROD_ACCESS_KEY_ID=${GF_AWS_NOTPROD_ACCESS_KEY_ID}
       # - GF_AWS_NOTPROD_SECRET_ACCESS_KEY=${GF_AWS_NOTPROD_SECRET_ACCESS_KEY}
@@ -37,6 +37,9 @@ pipeline:
     commands:
       - export KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
       - export KUBE_SERVER=$$NOTPROD_KUBE_SERVER
+      - export FMS_URL="http://fms.notprod.dq.homeoffice.gov.uk"
+      - export CRT_URL="http://crt-acp.notprod.dq.homeoffice.gov.uk"
+      - export GAIT_URL="http://gait.notprod.dq.homeoffice.gov.uk"
       # - export WHITELIST_RANGES=$$NOTPROD_WHITELIST_RANGES
       - |
         kd --file pvc.yml --file service.yml --file network-policy.yml --file deployment.yml

@@ -16,12 +16,10 @@ out_hdlr.setLevel(logging.INFO)
 log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
-username = os.environ.get('VARENV')
-
 service_list= [
     {"name": "gait", "url": os.environ.get('GAIT_URL')},
     {"name": "fms", "url": os.environ.get('FMS_URL')},
-    {"name": "crt", "url": os.environ.get('FMS_URL')}
+    {"name": "crt", "url": os.environ.get('CRT_URL')}
     ]
 
 dic_list = []
