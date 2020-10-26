@@ -9,7 +9,7 @@ RUN apk add --no-cache --quiet --update
 
 RUN mkdir -p /APP/scripts
 
-COPY app/monitor/scripts/ /APP/scripts/
+COPY app/monitor/scripts/ /APP
 
 RUN adduser -D -H 1000 && chown -R 1000 /APP
 
@@ -21,4 +21,4 @@ EXPOSE 8000
 
 USER ${USERMAP_UID}
 
-CMD sh scripts/run.sh
+CMD pwd && sh /APP/scripts/run.sh
