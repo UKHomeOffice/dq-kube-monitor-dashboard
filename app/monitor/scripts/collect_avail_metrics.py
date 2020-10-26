@@ -65,8 +65,8 @@ def write_to_json():
         f = open("/APP/scripts/tracing.json", "w")
         print("dic_list is: ",dic_list)
         for item in dic_list:
-                f.write("# HELP Availability_of_"+item['name']+ " to check the URL uptime \n")
-                f.write("Availability_of_"+item['name']+" "+str(item['status'])+ "\n")
+                f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
+                f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
         f.close()
         log.info("File created")
     except Exception as e:
