@@ -5,11 +5,15 @@ LABEL maintainer="dqdevops@digital.homeoffice.gov.uk"
 ENV USERMAP_UID 1000
 WORKDIR /APP
 
+RUN apk add --no-cache --quiet --update
+
 RUN mkdir -p /APP/scripts
 
-COPY app/monitor/scripts/* /APP/scripts/
+COPY app/monitor/scripts/collect_avail_metrics.py /APP/scripts/
 
-RUN apk add --no-cache --quiet --update
+COPY app/monitor/scripts/prom_web_expose.py /APP/scripts/
+
+COPY app/monitor/scripts/run.sh /APP/scripts/
 
 RUN adduser -D -H 1000 && \
     chown -R 1000 /APP && \
