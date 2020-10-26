@@ -12,9 +12,16 @@ RUN mkdir -p /APP/scripts
 
 ADD scripts /APP/scripts/
 
-RUN adduser -D -H 1000 && chown -R 1000 /APP
+COPY scripts/collect_avail_metrics.py /APP/scripts/collect_avail_metrics.py
+RUN chmod +x /APP/scripts/scripts/collect_avail_metrics.py
 
-RUN chmod -R +x /APP/scripts/
+COPY scripts/collect_avail_metrics.py /APP/scripts/prom_web_expose.py
+RUN chmod +x /APP/scripts/scripts/prom_web_expose.py
+
+COPY scripts/collect_avail_metrics.py /APP/scripts/run.sh
+RUN chmod +x /APP/scripts/scripts/run.sh
+
+RUN adduser -D -H 1000 && chown -R 1000 /APP
 
 RUN pip install boto3 schedule requests
 
@@ -22,4 +29,4 @@ EXPOSE 8000
 
 USER ${USERMAP_UID}
 
-CMD ["/APP/scripts/run.sh"]
+CMD sh /APP/scripts/run.sh
