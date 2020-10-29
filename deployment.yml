@@ -37,20 +37,41 @@ spec:
         env:
           - name: FMS_URL
             {{ if eq .ENV "notprod" }}value: 'http://fms.notprod.dq.homeoffice.gov.uk'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'http://fms:3000'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://fms.dq.homeoffice.gov.uk'{{ end }}
           - name: CRT_URL
             {{ if eq .ENV "notprod" }}value: 'http://crt-acp.notprod.dq.homeoffice.gov.uk'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'http://crt-service:10443'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://crt.prod.dq.homeoffice.gov.uk'{{ end }}
           - name: GAIT_URL
             {{ if eq .ENV "notprod" }}value: 'http://gait.notprod.dq.homeoffice.gov.uk'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'http://ga-app-service:3000'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://gait.dq.homeoffice.gov.uk'{{ end }}
         ports:
           - containerPort: 8000
         volumeMounts:
           - mountPath: /APP/share
             name: dq-monitor-storage
+          - mountPath: /APP/fms-certs
+            name: fms-cert-key
+            readOnly: true
 
+      - name: opensslsidekick
+        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+        env:
+          - name: EXPOSED_PORT
+            value: '5000'
+          - name: HOST
+            value: '10.3.0.11'
+          - name: PORT
+            value: '8081'
+        ports:
+          - containerPort: 5000
       volumes:
         - name: dq-monitor-storage
           persistentVolumeClaim:
             claimName: dq-monitor-storage
+        - name: fms-cert-key
+          secret:
+            secretName: fms-cert-key

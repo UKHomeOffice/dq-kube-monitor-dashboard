@@ -20,11 +20,11 @@ service_list= [
     {"name": "gait", "url": os.environ.get('GAIT_URL')},
     {"name": "fms", "url": os.environ.get('FMS_URL')},
     {"name": "crt", "url": os.environ.get('CRT_URL')}
-        # {"name": "gait", "url": "http://ga-app-service:3000"},
-        # {"name": "fms", "url": "http://fms:3000"},
-        # {"name": "crt", "url": "http://crt-acp.notprod.dq.homeoffice.gov.uk"}
+
     ]
 
+fms_cert = '/APP/fms-certs/fms_cert'
+fms_key = '/APP/fms-certs/fms_key'
 dic_list = []
 dic_item  = {}
 #Setting log to STOUT
@@ -34,7 +34,10 @@ def obtain_http_code(url_name, url):
     and then convert it to 1 or 0
     """
     try:
-        http_status = requests.get(url).status_code
+        if url_name == 'fms':
+            http_status = requests.get(url, cert=(fms_cert, fms_key)).status_code
+        else:
+            http_status = requests.get(url).status_code
         if http_status == 200:
             status = 0
         else:
