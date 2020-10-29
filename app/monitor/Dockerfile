@@ -7,6 +7,8 @@ WORKDIR /APP
 
 RUN apk add --no-cache --quiet --update
 
+RUN apk --no-cache add curl
+
 RUN mkdir -p /APP/scripts
 
 COPY app/monitor/scripts/ /APP/scripts
