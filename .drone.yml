@@ -35,7 +35,7 @@ pipeline:
       - export KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
       - export KUBE_SERVER=$$NOTPROD_KUBE_SERVER
       - |
-        kd --file pvc.yml --file service.yml --file secret.yml --file network-policy.yml --file deployment.yml
+        kd --file pvc.yml --file service.yml --file secrets.yml --file network-policy.yml --file deployment.yml
 
     when:
       event: push
@@ -60,7 +60,7 @@ pipeline:
       - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
       - export KUBE_SERVER=$$PROD_KUBE_SERVER
       - |
-        kd --file pvc.yml --file service.yml --file secret.yml --file network-policy.yml --file deployment.yml
+        kd --file pvc.yml --file service.yml --file secrets.yml --file network-policy.yml --file deployment.yml
 
     when:
       environment: production
