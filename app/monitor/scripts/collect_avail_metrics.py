@@ -19,7 +19,8 @@ log.setLevel(logging.INFO)
 service_list= [
     {"name": "gait", "url": os.environ.get('GAIT_URL')},
     {"name": "fms", "url": os.environ.get('FMS_URL')},
-    {"name": "crt", "url": os.environ.get('CRT_URL')}
+    {"name": "crt", "url": os.environ.get('CRT_URL')},
+    {"name": "tab", "url": os.environ.get('TAB_URL')}
 
     ]
 
@@ -31,11 +32,19 @@ dic_item  = {}
 def obtain_http_code(url_name, url):
     """
     Obtain the http status code of each services
-    and then convert it to 1 or 0
+    and then convert it to 0 or 2
     """
     try:
         if url_name == 'fms':
             http_status = requests.get(url, cert=(fms_cert, fms_key)).status_code
+        elif url_name == 'tab':
+            server_status = requests.get(url+"/admin/systeminfo.xml").text
+            http_status = requests.get(url).status_code
+            pattern = "<service status=\"Active\"/>"
+            if (pattern in server_status and http_status == 200):
+                status = 0
+            else:
+                status = 2
         else:
             http_status = requests.get(url).status_code
         if http_status == 200:

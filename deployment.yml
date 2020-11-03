@@ -44,6 +44,8 @@ spec:
           - name: GAIT_URL
             {{ if eq .ENV "notprod" }}value: 'http://gait.notprod.dq.homeoffice.gov.uk'{{ end }}
             {{ if eq .ENV "prod" }}value: 'http://gait.dq.homeoffice.gov.uk'{{ end }}
+          - name: TAB_URL
+            value: 'http://127.0.0.1:5000'
         ports:
           - containerPort: 8000
         volumeMounts:
