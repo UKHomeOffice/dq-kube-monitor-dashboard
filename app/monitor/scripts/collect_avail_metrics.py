@@ -28,7 +28,7 @@ fms_key = '/APP/fms-certs/fms_key'
 dic_list = []
 dic_item  = {}
 #Setting log to STOUT
-def obtain_http_code(url_name, url):
+def obtain_http_code(url_name, url, server):
     """
     Obtain the http status code of each services
     and then convert it to 0 or 2
@@ -72,7 +72,7 @@ def service_status_list():
     log.info("Starting to fetch the availability of each service....")
     dic_list.clear()
     for service in service_list:
-        obtain_http_code(service['name'], service['url'])
+        obtain_http_code(service['name'], service['url'], service['server'])
 
 def write_to_json():
     """
