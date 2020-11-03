@@ -47,10 +47,10 @@ def obtain_http_code(url_name, url):
                 status = 2
         else:
             http_status = requests.get(url).status_code
-        if http_status == 200:
-            status = 0
-        else:
-            status = 2
+            if http_status == 200:
+                status = 0
+            else:
+                status = 2
         dic_item = { 'name': url_name , 'status': status}
         dic_list.append(dic_item)
         log.info("Obtained the Availability status of "+url_name)
