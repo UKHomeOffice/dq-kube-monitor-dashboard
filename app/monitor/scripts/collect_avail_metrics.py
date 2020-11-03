@@ -41,7 +41,7 @@ def obtain_http_code(url_name, url):
             http_status = requests.get(url).status_code
             server_info = requests.get(url+"/admin/systeminfo.xml").text
             pattern = "<service status=\"Active\"/>"
-            if pattern in server_info
+            if pattern in server_info:
                 server_status = 200
             else:
                 server_status = 400
