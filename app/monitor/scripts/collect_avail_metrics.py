@@ -37,6 +37,9 @@ def obtain_http_code(url_name, url, server):
         if url_name == 'fms':
             http_status = requests.get(url, cert=(fms_cert, fms_key)).status_code
             server_status = requests.get(server).status_code
+        if url_name == 'crt':
+            http_status = requests.get(url).status_code
+            server_status = 200
         elif url_name == 'tab':
             http_status = requests.get(url).status_code
             server_info = requests.get(url+"/admin/systeminfo.xml").text
