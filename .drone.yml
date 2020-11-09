@@ -61,7 +61,7 @@ pipeline:
       - export KUBE_SERVER=$$PROD_KUBE_SERVER
       - |
         kd --file pvc.yml --file service.yml --file secrets.yml --file network-policy.yml --file deployment.yml
-
+        
     when:
       environment: production
       branch: master

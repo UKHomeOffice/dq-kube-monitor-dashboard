@@ -48,10 +48,10 @@ spec:
             value: 'http://127.0.0.1:5000'
           - name: DRT_JSN_GRP
             {{ if eq .ENV "notprod" }}value: 'drt-notprod-json-lambda'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'drt-prod-json-lambda{{ end }}
+            {{ if eq .ENV "prod" }}value: 'drt-prod-json-lambda'{{ end }}
           - name: DRT_ATH_GRP
             {{ if eq .ENV "notprod" }}value: 'drt-notprod-lambda-athena'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'drt-prod-lambda-athena{{ end }}
+            {{ if eq .ENV "prod" }}value: 'drt-prod-lambda-athena'{{ end }}
           - name: DRT_RDS_GRP
             {{ if eq .ENV "notprod" }}value: 'drt-notprod-lambda-rds'{{ end }}
             {{ if eq .ENV "prod" }}value: 'drt-prod-lambda-rds'{{ end }}
