@@ -82,7 +82,8 @@ def obtain_http_code(url_name, url, server):
 
     # except requests.ConnectionError as e:
     except requests.exceptions.RequestException as e:
-        log.error("Not able to obtain the Availability status of "+url_name+" with the error message: "+e)
+        dic_item = { 'name': url_name , 'status': 2}
+        # log.error("Not able to obtain the Availability status of "+url_name+" with the error message: "+e)
         # print(e)
 
 def obtain_lambda_avail(lambda_name,func_name):
