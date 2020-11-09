@@ -124,7 +124,7 @@ def lambda_avail_check():
 
     dic_item = { 'name': "drt" , 'status': drt_status}
     dic_list.append(dic_item)
-    dic_item = { 'name': "drt" , 'status': bf_status}
+    dic_item = { 'name': "bfdp" , 'status': bf_status}
     dic_list.append(dic_item)
     # log.info("Obtained the Availability status of DRT")
 
