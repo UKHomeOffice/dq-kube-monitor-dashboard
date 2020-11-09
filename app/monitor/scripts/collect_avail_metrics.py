@@ -7,7 +7,7 @@ import logging
 import requests
 import datetime
 import schedule
-from itertools import imap
+from itertools import map
 from operator import itemgetter
 
 #Setting log to STOUT
