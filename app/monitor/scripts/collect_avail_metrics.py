@@ -114,7 +114,7 @@ def lambda_avail_check():
 
     if (drt_jsn_health[0] == 0 and drt_rds_health[0] == 0 and drt_ath_health[0] == 0):
         drt_status = 0
-    elif ((bool(drt_jsn_health[0] == 0) ^ bool(drt_rds_health[0] == 0)) ^ bool(drt_ath_health[0] == 0))):
+    elif ((bool(drt_jsn_health[0] == 0) ^ bool(drt_rds_health[0] == 0)) ^ bool(drt_ath_health[0] == 0)):
         drt_status = 1
     else:
         drt_status = 2
