@@ -56,7 +56,7 @@ def obtain_http_code(url_name, url, server):
             # server_status = 200
         elif url_name == 'tab':
             http_status = requests.get(url).status_code
-            server_status = 200
+            # server_status = 200
             # server_info = requests.get(url+"/admin/systeminfo.xml").text
             # pattern = "<service status=\"Active\"/>"
             # if pattern in server_info:
@@ -80,9 +80,10 @@ def obtain_http_code(url_name, url, server):
         dic_list.append(dic_item)
         log.info("Obtained the Availability status of "+url_name)
 
-    except requests.ConnectionError as e:
+    # except requests.ConnectionError as e:
+    except requests.exceptions.RequestException as e:
         log.error("Not able to obtain the Availability status of "+url_name+" with the error message: "+e)
-        print(e)
+        # print(e)
 
 def obtain_lambda_avail(lambda_name,func_name):
     """
