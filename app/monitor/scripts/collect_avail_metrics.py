@@ -50,13 +50,13 @@ def obtain_http_code(url_name, url, server):
     try:
         if url_name == 'fms':
             http_status = requests.get(url, cert=(fms_cert, fms_key)).status_code
-            # server_status = requests.get(server).status_code
+            server_status = requests.get(server).status_code
         elif url_name == 'crt':
             http_status = requests.get(url).status_code
-            # server_status = 200
+            server_status = 200
         elif url_name == 'tab':
             http_status = requests.get(url).status_code
-            # server_status = 200
+            server_status = 200
             # server_info = requests.get(url+"/admin/systeminfo.xml").text
             # pattern = "<service status=\"Active\"/>"
             # if pattern in server_info:
@@ -65,16 +65,15 @@ def obtain_http_code(url_name, url, server):
             #     server_status = 400
         else:
             http_status = requests.get(url).status_code
-            # server_status = requests.get(server).status_code
+            server_status = requests.get(server).status_code
 
-        # if (http_status == 200 and server_status == 200):
-        if http_status == 200:
+        if (http_status == 200 and server_status == 200):
+        # if http_status == 200:
             status = 0
-        # elif (bool(http_status == 200) ^ bool(server_status == 200)):
-            # status = 1
+        elif (bool(http_status == 200) ^ bool(server_status == 200)):
+            status = 1
         else:
             status = 2
-
 
         dic_item = { 'name': url_name , 'status': status}
         dic_list.append(dic_item)
@@ -84,7 +83,7 @@ def obtain_http_code(url_name, url, server):
     # except requests.exceptions.RequestException as e:
     except:
         dic_item = { 'name': url_name , 'status': 2}
-        log.error("Not able to obtain the Availability status of "+url_name)
+        # log.error("Not able to obtain the Availability status of "+url_name)
         # print(e)
 
 def obtain_lambda_avail(lambda_name,func_name):
