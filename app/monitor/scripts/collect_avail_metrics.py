@@ -7,6 +7,7 @@ import logging
 import requests
 import datetime
 import schedule
+import boto3
 from operator import itemgetter
 
 #Setting log to STOUT
