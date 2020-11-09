@@ -89,39 +89,44 @@ def obtain_lambda_avail(lambda_name,func_name):
     time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
     timenowconv = timenow.timestamp() * 1000.0
     time1minconv = time1min.timestamp() * 1000.0
-    lambda_logs = boto3.client('logs', region_name=active_region)
-
-    filter = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='ERROR', startTime=int(time1minconv),
-                                            endTime=int(timenowconv))
-    message = filter['events']
-    if message == []:
-        lambda_health = 0
-    else:
-        lambda_health = 2
-
-    lambda_item = {lambda_name+'_health': lambda_health}
-    lambda_list.append(lambda_item)
-    log.info("Obtained the Availability status of "+lambda_name)
+    # lambda_logs = boto3.client('logs', region_name='eu-west-2')
+    #
+    # filter = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
+    #                                         filterPattern='ERROR', startTime=int(time1minconv),
+    #                                         endTime=int(timenowconv))
+    # message = filter['events']
+    # if message == []:
+    #     lambda_health = 0
+    # else:
+    #     lambda_health = 2
+    #
+    # lambda_item = {lambda_name+'_health': lambda_health}
+    # lambda_list.append(lambda_item)
+    # log.info("Obtained the Availability status of "+lambda_name)
 
 def lambda_avail_check():
-    for lam in lambda_func_list:
-        obtain_lambda_avail(lam['name'],lam['func_name'])
+    # for lam in lambda_func_list:
+    #     obtain_lambda_avail(lam['name'],lam['func_name'])
+    #
+    # drt_jsn_health = list(map(itemgetter('drt_jsn_health'), lambda_list))
+    # drt_ath_health = list(map(itemgetter('drt_ath_health'), lambda_list))
+    # drt_rds_health = list(map(itemgetter('drt_rds_health'), lambda_list))
+    #
+    # if (drt_jsn_health[0] == 0 and drt_rds_health[0] == 0 and drt_ath_health[0] == 0):
+    #     drt_status = 0
+    # elif ((bool(drt_jsn_health[0] == 0) ^ bool(drt_rds_health[0] == 0)) ^ bool(drt_ath_health[0] == 0)):
+    #     drt_status = 1
+    # else:
+    #     drt_status = 2
 
-    drt_jsn_health = list(map(itemgetter('drt_jsn_health'), lambda_list))
-    drt_ath_health = list(map(itemgetter('drt_ath_health'), lambda_list))
-    drt_rds_health = list(map(itemgetter('drt_rds_health'), lambda_list))
-
-    if (drt_jsn_health[0] == 0 and drt_rds_health[0] == 0 and drt_ath_health[0] == 0):
-        drt_status = 0
-    elif ((bool(drt_jsn_health[0] == 0) ^ bool(drt_rds_health[0] == 0)) ^ bool(drt_ath_health[0] == 0)):
-        drt_status = 1
-    else:
-        drt_status = 2
+    drt_status = 0
+    bf_status = 0
 
     dic_item = { 'name': "drt" , 'status': drt_status}
     dic_list.append(dic_item)
-    log.info("Obtained the Availability status of DRT")
+    dic_item = { 'name': "drt" , 'status': bf_status}
+    dic_list.append(dic_item)
+    # log.info("Obtained the Availability status of DRT")
 
 def service_status_list():
     """
