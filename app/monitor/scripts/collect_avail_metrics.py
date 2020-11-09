@@ -7,6 +7,8 @@ import logging
 import requests
 import datetime
 import schedule
+import boto3
+from operator import itemgetter
 
 #Setting log to STOUT
 log = logging.getLogger(__name__)
@@ -22,11 +24,20 @@ service_list= [
     {"name": "crt", "url": os.environ.get('CRT_URL'), "server": 'http://crt-service:10443'},
     {"name": "tab", "url": os.environ.get('TAB_URL'), "server": os.environ.get('TAB_URL')}
     ]
+lambda_func_list = [
+    {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP')},
+    {"name": "drt_jsn", "func_name": os.environ.get('DRT_JSN_GRP')},
+    {"name": "drt_rds", "func_name": os.environ.get('DRT_RDS_GRP')}
+    # {"name": "bf_", "func_name": os.environ.get('DRT_GRP')},
+    ]
 
 fms_cert = '/APP/fms-certs/fms_cert'
 fms_key = '/APP/fms-certs/fms_key'
 dic_list = []
+lambda_list = []
 dic_item  = {}
+lambda_item = {}
+
 #Setting log to STOUT
 def obtain_http_code(url_name, url, server):
     """
@@ -42,12 +53,13 @@ def obtain_http_code(url_name, url, server):
             server_status = 200
         elif url_name == 'tab':
             http_status = requests.get(url).status_code
-            server_info = requests.get(url+"/admin/systeminfo.xml").text
-            pattern = "<service status=\"Active\"/>"
-            if pattern in server_info:
-                server_status = 200
-            else:
-                server_status = 400
+            server_status = 200
+            # server_info = requests.get(url+"/admin/systeminfo.xml").text
+            # pattern = "<service status=\"Active\"/>"
+            # if pattern in server_info:
+            #     server_status = 200
+            # else:
+            #     server_status = 400
         else:
             http_status = requests.get(url).status_code
             server_status = requests.get(server).status_code
@@ -68,14 +80,64 @@ def obtain_http_code(url_name, url, server):
         log.error("Not able to obtain the Availability status of "+url_name+" with the error message: "+e)
         print(e)
 
+def obtain_lambda_avail(lambda_name,func_name):
+    """
+    obtain the lambda functions State & if they are
+    running without errors
+    """
+    timenow = datetime.datetime.now()
+    time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
+    timenowconv = timenow.timestamp() * 1000.0
+    time1minconv = time1min.timestamp() * 1000.0
+    # lambda_logs = boto3.client('logs', region_name='eu-west-2')
+    #
+    # filter = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
+    #                                         filterPattern='ERROR', startTime=int(time1minconv),
+    #                                         endTime=int(timenowconv))
+    # message = filter['events']
+    # if message == []:
+    #     lambda_health = 0
+    # else:
+    #     lambda_health = 2
+    #
+    # lambda_item = {lambda_name+'_health': lambda_health}
+    # lambda_list.append(lambda_item)
+    # log.info("Obtained the Availability status of "+lambda_name)
+
+def lambda_avail_check():
+    # for lam in lambda_func_list:
+    #     obtain_lambda_avail(lam['name'],lam['func_name'])
+    #
+    # drt_jsn_health = list(map(itemgetter('drt_jsn_health'), lambda_list))
+    # drt_ath_health = list(map(itemgetter('drt_ath_health'), lambda_list))
+    # drt_rds_health = list(map(itemgetter('drt_rds_health'), lambda_list))
+    #
+    # if (drt_jsn_health[0] == 0 and drt_rds_health[0] == 0 and drt_ath_health[0] == 0):
+    #     drt_status = 0
+    # elif ((bool(drt_jsn_health[0] == 0) ^ bool(drt_rds_health[0] == 0)) ^ bool(drt_ath_health[0] == 0)):
+    #     drt_status = 1
+    # else:
+    #     drt_status = 2
+
+    drt_status = 0
+    bf_status = 0
+
+    dic_item = { 'name': "drt" , 'status': drt_status}
+    dic_list.append(dic_item)
+    dic_item = { 'name': "bfdp" , 'status': bf_status}
+    dic_list.append(dic_item)
+    # log.info("Obtained the Availability status of DRT")
+
 def service_status_list():
     """
-    create a list of services and the  2  or 0 code
+    create a list of services and the 2 or 0 code
     """
     log.info("Starting to fetch the availability of each service....")
     dic_list.clear()
     for service in service_list:
         obtain_http_code(service['name'], service['url'], service['server'])
+
+    lambda_avail_check()
 
 def write_to_json():
     """
