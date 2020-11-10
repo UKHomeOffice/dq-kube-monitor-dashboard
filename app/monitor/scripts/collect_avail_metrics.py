@@ -102,7 +102,7 @@ def obtain_lambda_avail(lambda_name,func_name):
     time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
     timenowconv = timenow.timestamp() * 1000.0
     time1minconv = time1min.timestamp() * 1000.0
-    lambda_logs = boto3.client('logs')
+    lambda_logs = boto3.client('logs',  region_name="eu-west-2")
 
     filter = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
                                             filterPattern='ERROR', startTime=int(time1minconv),
