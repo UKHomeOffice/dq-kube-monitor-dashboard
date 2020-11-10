@@ -55,6 +55,30 @@ spec:
           - name: DRT_RDS_GRP
             {{ if eq .ENV "notprod" }}value: 'drt-notprod-lambda-rds'{{ end }}
             {{ if eq .ENV "prod" }}value: 'drt-prod-lambda-rds'{{ end }}
+          - name: BF_API_PRS
+            {{ if eq .ENV "notprod" }}value: 'api-kafka-input-notprod-lambda'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'api-kafka-input-prod-lambda'{{ end }}
+          - name: BF_API_RAW
+            {{ if eq .ENV "notprod" }}value: 'cdlz-notprod-lambda'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'cdlz-prod-lambda'{{ end }}
+          - name: BF_SCH
+            {{ if eq .ENV "notprod" }}value: 'consolidated-schedule-notprod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'consolidated-schedule-prod-lambda-athena'{{ end }}
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: dq-monitor-secrets
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: dq-monitor-secrets
+                key: AWS_SECRET_ACCESS_KEY
+          - name: AWS_DEFAULT_REGION
+            valueFrom:
+              secretKeyRef:
+                name: dq-monitor-secrets
+                key: AWS_DEFAULT_REGION
         ports:
           - containerPort: 8000
         volumeMounts:

@@ -28,14 +28,23 @@ pipeline:
       - NOTPROD_KUBE_SERVER
       - NOTPROD_FMS_KEY
       - NOTPROD_FMS_CERT
+      - NOTPROD_AWS_ACCESS_KEY_ID
+      - NOTPROD_AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
 
     commands:
       - export FMS_KEY=$$NOTPROD_FMS_KEY
       - export FMS_CERT=$$NOTPROD_FMS_CERT
       - export KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
       - export KUBE_SERVER=$$NOTPROD_KUBE_SERVER
+      - export AWS_ACCESS_KEY_ID=$$NOTPROD_AWS_ACCESS_KEY_ID
+      - export AWS_SECRET_ACCESS_KEY=$$NOTPROD_AWS_SECRET_ACCESS_KEY
+      - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
+      - kd --delete --file deployment.yml
       - |
-        kd --file pvc.yml --file service.yml --file secrets.yml --file network-policy.yml --file deployment.yml
+        kd -f pvc.yml -f service.yml \
+        -f secrets.yml -f aws_secrets.yml \
+        -f network-policy.yml -f deployment.yml
 
     when:
       event: push
@@ -53,15 +62,24 @@ pipeline:
       - PROD_KUBE_SERVER
       - PROD_FMS_KEY
       - PROD_FMS_CERT
+      - PROD_AWS_ACCESS_KEY_ID
+      - PROD_AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
 
     commands:
       - export FMS_KEY=$$PROD_FMS_KEY
       - export FMS_CERT=$$PROD_FMS_CERT
       - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
       - export KUBE_SERVER=$$PROD_KUBE_SERVER
+      - export AWS_ACCESS_KEY_ID=$$PROD_AWS_ACCESS_KEY_ID
+      - export AWS_SECRET_ACCESS_KEY=$$PROD_AWS_SECRET_ACCESS_KEY
+      - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
+      - kd --delete --file deployment.yml
       - |
-        kd --file pvc.yml --file service.yml --file secrets.yml --file network-policy.yml --file deployment.yml
-        
+        kd -f pvc.yml -f service.yml \
+        -f secrets.yml -f aws_secrets.yml \
+        -f network-policy.yml -f deployment.yml
+
     when:
       environment: production
       branch: master
