@@ -62,8 +62,8 @@ spec:
             {{ if eq .ENV "notprod" }}value: 'cdlz-notprod-lambda'{{ end }}
             {{ if eq .ENV "prod" }}value: 'cdlz-prod-lambda'{{ end }}
           - name: BF_SCH
-            {{ if eq .ENV "notprod" }}value: 'consolidated-schedule-notprod-lambda-athena '{{ end }}
-            {{ if eq .ENV "prod" }}value: 'consolidated-schedule-prod-lambda-athena '{{ end }}
+            {{ if eq .ENV "notprod" }}value: 'consolidated-schedule-notprod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'consolidated-schedule-prod-lambda-athena'{{ end }}
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
