@@ -9,13 +9,13 @@ import datetime
 import schedule
 import boto3
 from operator import itemgetter
-from botocore.config import Config
+# from botocore.config import Config
 
-CONFIG = Config(
-    retries=dict(
-        max_attempts=20
-    )
-)
+# CONFIG = Config(
+#     retries=dict(
+#         max_attempts=20
+#     )
+# )
 
 #Setting log to STOUT
 log = logging.getLogger(__name__)
