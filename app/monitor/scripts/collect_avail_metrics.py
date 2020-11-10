@@ -90,6 +90,7 @@ def obtain_http_code(url_name, url, server):
     except requests.exceptions.RequestException as e:
     # except:
         dic_item = { 'name': url_name , 'status': 2}
+        dic_list.append(dic_item)
         # log.error("Not able to obtain the Availability status of "+url_name)
         print(e)
 
