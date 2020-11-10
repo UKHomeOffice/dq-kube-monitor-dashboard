@@ -113,7 +113,8 @@ def obtain_lambda_avail(lambda_name,func_name):
     else:
         lambda_health = 2
 
-    lambda_item = {lambda_name+'_health': lambda_health}
+    # lambda_item = {lambda_name+'_health': lambda_health}
+    lambda_item = { 'name': lambda_name , 'status': lambda_health}
     lambda_list.append(lambda_item)
     log.info("Obtained the Availability status of "+lambda_name)
 
@@ -124,12 +125,18 @@ def lambda_avail_check():
     print ("lambda_list is: ",lambda_list)
 
     for lam in lambda_list:
-        drt_ath_health = lam['drt_ath_health']
-        drt_jsn_health = lam['drt_jsn_health']
-        drt_rds_health = lam['drt_rds_health']
-        bf_api_parsed_health = lam['bf_api_parsed_health']
-        bf_api_raw_health = lam['bf_api_raw_health']
-        bf_sch_health = lam['bf_sch_health']
+        if lam['name'] == 'drt_ath':
+            drt_ath_health = lam['status']
+        if lam['name'] == 'drt_jsn':
+            drt_jsn_health = lam['status']
+        if lam['name'] == 'drt_rds':
+            drt_rds_health = lam['status']
+        if lam['name'] == 'bf_api_parsed':
+            bf_api_parsed_health = lam['status']
+        if lam['name'] == 'bf_api_raw':
+            bf_api_raw_health = lam['status']
+        if lam['name'] == 'bf_sch':
+            bf_sch_health = lam['status']
 
     if (drt_jsn_health == 0 and drt_rds_health == 0 and drt_ath_health == 0):
         drt_status = 0
