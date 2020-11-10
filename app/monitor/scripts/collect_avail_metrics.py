@@ -9,6 +9,13 @@ import datetime
 import schedule
 import boto3
 from operator import itemgetter
+from botocore.config import Config
+
+CONFIG = Config(
+    retries=dict(
+        max_attempts=20
+    )
+)
 
 #Setting log to STOUT
 log = logging.getLogger(__name__)
@@ -80,11 +87,11 @@ def obtain_http_code(url_name, url, server):
         log.info("Obtained the Availability status of "+url_name)
 
     # except requests.ConnectionError as e:
-    # except requests.exceptions.RequestException as e:
-    except:
-        dic_item = { 'name': url_name , 'status': 2}
-        # log.error("Not able to obtain the Availability status of "+url_name)
-        # print(e)
+    except requests.exceptions.RequestException as e:
+    # except:
+        # dic_item = { 'name': url_name , 'status': 2}
+        log.error("Not able to obtain the Availability status of "+url_name)
+        print(e)
 
 def obtain_lambda_avail(lambda_name,func_name):
     """
@@ -95,7 +102,7 @@ def obtain_lambda_avail(lambda_name,func_name):
     time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
     timenowconv = timenow.timestamp() * 1000.0
     time1minconv = time1min.timestamp() * 1000.0
-    lambda_logs = boto3.client('logs', region_name='eu-west-2')
+    lambda_logs = boto3.client('logs', config=CONFIG)
 
     filter = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
                                             filterPattern='ERROR', startTime=int(time1minconv),

@@ -74,6 +74,11 @@ spec:
               secretKeyRef:
                 name: dq-monitor-secrets
                 key: AWS_SECRET_ACCESS_KEY
+          - name: AWS_DEFAULT_REGION
+            valueFrom:
+              secretKeyRef:
+                name: dq-monitor-secrets
+                key: AWS_DEFAULT_REGION
         ports:
           - containerPort: 8000
         volumeMounts:
