@@ -121,25 +121,40 @@ def lambda_avail_check():
     for lam in lambda_func_list:
         obtain_lambda_avail(lam['name'],lam['func_name'])
 
-    print ("lambda_list is: ",lambda_list)    
+    print ("lambda_list is: ",lambda_list)
 
-    drt_jsn_health = list(map(itemgetter('drt_jsn_health'), lambda_list))
-    drt_ath_health = list(map(itemgetter('drt_ath_health'), lambda_list))
-    drt_rds_health = list(map(itemgetter('drt_rds_health'), lambda_list))
+    for lam in lambda_list:
+        drt_ath_health = lam['drt_ath_health']
+        drt_jsn_health = lam['drt_jsn_health']
+        drt_rds_health = lam['drt_rds_health']
+        bf_api_parsed_health = lam['bf_api_parsed_health']
+        bf_api_raw_health = lam['bf_api_raw_health']
+        bf_sch_health = lam['bf_sch_health']
 
-    if (drt_jsn_health[0] == 0 and drt_rds_health[0] == 0 and drt_ath_health[0] == 0):
+    if (drt_jsn_health == 0 and drt_rds_health == 0 and drt_ath_health == 0):
         drt_status = 0
-    elif ((bool(drt_jsn_health[0] == 0) ^ bool(drt_rds_health[0] == 0)) ^ bool(drt_ath_health[0] == 0)):
+    elif ((bool(drt_jsn_health == 0) ^ bool(drt_rds_health == 0)) ^ bool(drt_ath_health == 0)):
         drt_status = 1
     else:
         drt_status = 2
 
-    drt_status = 0
-
     dic_item = { 'name': "drt" , 'status': drt_status}
     dic_list.append(dic_item)
 
-    bf_status = 0
+    if (bf_sch_health == 0 and bf_sch_health == 0):
+        bf_api_status = 0
+    elif (bool(bf_sch_health == 0) ^ bool(bf_sch_health == 0)):
+        bf_api_status = 1
+    else:
+        bf_api_status = 2
+
+    if (bf_api_status == 0 and bf_sch_health == 0):
+        bf_status = 0
+    elif (bool(bf_api_status == 0) ^ bool(bf_sch_health == 0)):
+        bf_status = 1
+    else:
+        bf_status = 2
+
     dic_item = { 'name': "bfdp" , 'status': bf_status}
     dic_list.append(dic_item)
     # log.info("Obtained the Availability status of DRT")
