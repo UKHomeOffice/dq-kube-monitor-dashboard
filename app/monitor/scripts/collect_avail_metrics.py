@@ -121,6 +121,8 @@ def lambda_avail_check():
     for lam in lambda_func_list:
         obtain_lambda_avail(lam['name'],lam['func_name'])
 
+    print ("lambda_list is: ",lambda_list)    
+
     drt_jsn_health = list(map(itemgetter('drt_jsn_health'), lambda_list))
     drt_ath_health = list(map(itemgetter('drt_ath_health'), lambda_list))
     drt_rds_health = list(map(itemgetter('drt_rds_health'), lambda_list))
