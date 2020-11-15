@@ -7,7 +7,11 @@ WORKDIR /APP
 
 RUN apk add --no-cache --quiet --update
 
-RUN apk --no-cache add curl
+RUN apk --no-cache add curl \
+g++ \
+gcc \
+libxslt-dev \
+postgresql-dev \
 
 RUN mkdir -p /APP/scripts
 
@@ -17,7 +21,7 @@ RUN adduser -D -H 1000 && chown -R 1000 /APP
 
 RUN chmod -R +x /APP/scripts
 
-RUN pip install boto3 schedule requests psycopg2-binary
+RUN pip install boto3 schedule requests psycopg2
 
 EXPOSE 8000
 
