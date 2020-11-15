@@ -86,7 +86,10 @@ def obtain_fms_fresh():
         fresh_dic_list.append(dic_item)
 
     except Exception as err:
-        log.error("there is an error connecting to fms db: ",err)
+        # log.error("there is an error connecting to fms db: ",err)
+        dic_item = { 'name': "fms_data" , 'status': 2}
+        fresh_dic_list.append(dic_item)
+        print (err)
 
 
 def service_status_list():
