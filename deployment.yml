@@ -64,6 +64,18 @@ spec:
           - name: BF_SCH
             {{ if eq .ENV "notprod" }}value: 'consolidated-schedule-notprod-lambda-athena'{{ end }}
             {{ if eq .ENV "prod" }}value: 'consolidated-schedule-prod-lambda-athena'{{ end }}
+          - name: BF_XRS_ATH
+            {{ if eq .ENV "notprod" }}value: 'api-cross-record-scored-notprod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'api-cross-record-scored-prod-lambda-athena'{{ end }}
+          - name: BF_RLS_ATH
+            {{ if eq .ENV "notprod" }}value: 'api-record-level-score-notprod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'api-record-level-score-prod-lambda-athena'{{ end }}
+          - name: BF_ASR_ATH
+            {{ if eq .ENV "notprod" }}value: 'api-accuracy-scoring-notprod-lambda-scoring-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'api-accuracy-scoring-prod-lambda-scoring-athena'{{ end }}
+          - name: BF_AS_ATH
+            {{ if eq .ENV "notprod" }}value: 'api-accuracy-scoring-notprod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'api-accuracy-scoring-prod-lambda-athena'{{ end }}
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
