@@ -6,9 +6,8 @@ import time
 import logging
 import requests
 import datetime
-import schedule
 import boto3
-from operator import itemgetter
+
 # from botocore.config import Config
 
 # CONFIG = Config(
@@ -31,6 +30,7 @@ service_list= [
     {"name": "crt", "url": os.environ.get('CRT_URL'), "server": 'http://crt-service:10443'},
     {"name": "tab", "url": os.environ.get('TAB_URL'), "server": os.environ.get('TAB_URL')}
     ]
+
 lambda_func_list = [
     {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP')},
     {"name": "drt_jsn", "func_name": os.environ.get('DRT_JSN_GRP')},
@@ -46,7 +46,7 @@ lambda_func_list = [
 
 fms_cert = '/APP/fms-certs/fms_cert'
 fms_key = '/APP/fms-certs/fms_key'
-dic_list = []
+avail_dic_list = []
 lambda_list = []
 dic_item  = {}
 lambda_item = {}
@@ -86,14 +86,14 @@ def obtain_http_code(url_name, url, server):
             status = 2
 
         dic_item = { 'name': url_name , 'status': status}
-        dic_list.append(dic_item)
+        avail_dic_list.append(dic_item)
         log.info("Obtained the Availability status of "+url_name)
 
     # except requests.ConnectionError as e:
     except requests.exceptions.RequestException as e:
     # except:
         dic_item = { 'name': url_name , 'status': 2}
-        dic_list.append(dic_item)
+        avail_dic_list.append(dic_item)
         # log.error("Not able to obtain the Availability status of "+url_name)
         print(e)
 
@@ -157,7 +157,7 @@ def lambda_avail_check():
         drt_status = 2
 
     dic_item = { 'name': "drt" , 'status': drt_status}
-    dic_list.append(dic_item)
+    avail_dic_list.append(dic_item)
     log.info("Obtained the Availability status of DRT")
 
     # bf api files
@@ -185,7 +185,7 @@ def lambda_avail_check():
         bf_status = 2
 
     dic_item = { 'name': "bfdp" , 'status': bf_status}
-    dic_list.append(dic_item)
+    avail_dic_list.append(dic_item)
     log.info("Obtained the Availability status of BFDP")
 
 def service_status_list():
@@ -193,36 +193,10 @@ def service_status_list():
     create a list of services and the 2 or 0 code
     """
     log.info("Starting to fetch the availability of each service....")
-    dic_list.clear()
+    avail_dic_list.clear()
     for service in service_list:
         obtain_http_code(service['name'], service['url'], service['server'])
 
     lambda_avail_check()
 
-def write_to_json():
-    """
-    create the tarcing.json file the will be grabed by the
-    prometheous agent to be sent to sysdig
-    """
-    try:
-        f = open("/APP/scripts/tracing.json", "w")
-        print("dic_list is: ",dic_list)
-        for item in dic_list:
-                f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
-                f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
-        f.close()
-        log.info("File created")
-    except Exception as e:
-        log.error(e)
-
-def main():
-    log.info("Starting Scheduler......")
-    schedule.every(1).minutes.at(":00").do(service_status_list)
-    schedule.every(1).minutes.at(":30").do(write_to_json)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-
-
-if __name__== "__main__":
-    main()
+    return avail_dic_list

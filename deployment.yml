@@ -63,7 +63,7 @@ spec:
             {{ if eq .ENV "prod" }}value: 'cdlz-prod-lambda'{{ end }}
           - name: BF_SCH
             {{ if eq .ENV "notprod" }}value: 'consolidated-schedule-notprod-lambda-athena'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'consolidated-schedule-prod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value:'consolidated-schedule-prod-lambda-athena'{{ end }}
           - name: BF_XRS_ATH
             {{ if eq .ENV "notprod" }}value: 'api-cross-record-scored-notprod-lambda-athena'{{ end }}
             {{ if eq .ENV "prod" }}value: 'api-cross-record-scored-prod-lambda-athena'{{ end }}
@@ -99,8 +99,7 @@ spec:
           - mountPath: /APP/fms-certs
             name: fms-cert-key
             readOnly: true
-
-      - name: opensslsidekick
+      - name: opensslsidekick-tab
         image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
         imagePullPolicy: Always
         securityContext:
@@ -115,6 +114,21 @@ spec:
             value: '8081'
         ports:
           - containerPort: 5000
+      - name: opensslsidekick-fms
+        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+        env:
+          - name: EXPOSED_PORT
+            value: '5001'
+          - name: HOST
+            value: '10.3.0.11'
+          - name: PORT
+            value: '5431'
+        ports:
+          - containerPort: 5001
       volumes:
         - name: dq-monitor-storage
           persistentVolumeClaim:
