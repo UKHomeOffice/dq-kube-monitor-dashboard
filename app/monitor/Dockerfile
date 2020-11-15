@@ -12,6 +12,10 @@ g++ \
 gcc \
 libxslt-dev \
 postgresql-dev \
+build-base \
+bash \
+linux-headers \
+pcre-dev
 
 RUN mkdir -p /APP/scripts
 
