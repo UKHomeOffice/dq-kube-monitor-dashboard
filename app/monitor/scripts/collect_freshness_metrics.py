@@ -20,7 +20,7 @@ log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
 fresh_dic_list = []
-
+dic_item  = {}
 
 def get_ssm_parameters(param_name_list):
     """
@@ -67,7 +67,7 @@ def obtain_fms_fresh():
             'options': '-c statement_timeout=60000'
         }
 
-        dbstatement = """SELECT DISTINCT file_name from dq_fms.stg_tbl_api"""
+        dbstatement = "SELECT DISTINCT file_name from dq_fms.stg_tbl_api"
 
         conn = psycopg2.connect(**conn_parameters)
         LOGGER.info('Connected to %s', os.environ['rds_address'])
