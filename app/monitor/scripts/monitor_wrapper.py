@@ -4,7 +4,7 @@ import time
 import logging
 import schedule
 from collect_avail_metrics import service_status_list as a
-# from collect_freshness_metrics import service_status_list as f
+from collect_freshness_metrics import service_status_list as f
 
 log = logging.getLogger(__name__)
 out_hdlr = logging.StreamHandler(sys.stdout)
@@ -24,10 +24,10 @@ def write_to_json():
         for item in a():
             f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
             f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
-        # print("f.fresh_dic_list is: ",f.fresh_dic_list)
-        # for item in f.fresh_dic_list:
-        #     f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
-        #     f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
+        print("f.fresh_dic_list is: ",f.fresh_dic_list)
+        for item in f.fresh_dic_list:
+            f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
+            f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
         f.close()
         log.info("File created")
     except Exception as e:
@@ -38,7 +38,7 @@ def write_to_json():
 def main():
     log.info("Starting Scheduler......")
     # schedule.every(1).minutes.at(":00").do(service_status_list)
-    schedule.every(1).minutes.at(":00").do(write_to_json)
+    schedule.every(2).minutes.at(":00").do(write_to_json)
     while True:
         schedule.run_pending()
         time.sleep(1)

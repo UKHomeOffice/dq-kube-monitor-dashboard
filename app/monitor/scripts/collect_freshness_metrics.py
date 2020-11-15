@@ -1,21 +1,15 @@
 
 import os,sys,subprocess
-import ssl
-import json
-import time
 import logging
-import requests
-import datetime
-import schedule
 import boto3
-from operator import itemgetter
-# from botocore.config import Config
+import psycopg2
+from botocore.config import Config
 
-# CONFIG = Config(
-#     retries=dict(
-#         max_attempts=20
-#     )
-# )
+CONFIG = Config(
+    retries=dict(
+        max_attempts=20
+    )
+)
 
 #Setting log to STOUT
 log = logging.getLogger(__name__)
@@ -25,176 +19,85 @@ out_hdlr.setLevel(logging.INFO)
 log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
-service_list= [
-    {"name": "gait", "url": os.environ.get('GAIT_URL'), "server": 'http://ga-app-service:3000'},
-    {"name": "fms", "url": os.environ.get('FMS_URL'), "server": 'http://fms:3000'},
-    {"name": "crt", "url": os.environ.get('CRT_URL'), "server": 'http://crt-service:10443'},
-    {"name": "tab", "url": os.environ.get('TAB_URL'), "server": os.environ.get('TAB_URL')}
-    ]
-lambda_func_list = [
-    {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP')},
-    {"name": "drt_jsn", "func_name": os.environ.get('DRT_JSN_GRP')},
-    {"name": "drt_rds", "func_name": os.environ.get('DRT_RDS_GRP')},
-    {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS')},
-    {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW')},
-    {"name": "bf_sch", "func_name": os.environ.get('BF_SCH')},
-    {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH')},
-    {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH')},
-    {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH')},
-    {"name": "bf_as_ath", "func_name": os.environ.get('BF_AS_ATH')}
-    ]
+fresh_dic_list = []
 
-fms_cert = '/APP/fms-certs/fms_cert'
-fms_key = '/APP/fms-certs/fms_key'
-dic_list = []
-lambda_list = []
-dic_item  = {}
-lambda_item = {}
 
-#Setting log to STOUT
-def obtain_http_code(url_name, url, server):
+def get_ssm_parameters(param_name_list):
     """
-    Obtain the http status code of each services
-    and then convert it to 0 or 2
+    Returns parameter values from AWS SSM
+
+    Args:
+        param_name_list : a list of parameter names
+
+    Returns:
+       A dict containing the parameter names and their values
     """
     try:
-        if url_name == 'fms':
-            http_status = requests.get(url, cert=(fms_cert, fms_key)).status_code
-            server_status = requests.get(server).status_code
-        elif url_name == 'crt':
-            http_status = requests.get(url).status_code
-            server_status = 200
-        elif url_name == 'tab':
-            http_status = requests.get(url).status_code
-            server_status = 200
-            # server_info = requests.get(url+"/admin/systeminfo.xml").text
-            # pattern = "<service status=\"Active\"/>"
-            # if pattern in server_info:
-            #     server_status = 200
-            # else:
-            #     server_status = 400
-        else:
-            http_status = requests.get(url).status_code
-            server_status = requests.get(server).status_code
+        ssm = boto3.client('ssm', region_name="eu-west-2", config=CONFIG)
+        response = ssm.get_parameters(
+            Names=param_name_list,
+            WithDecryption=True)
+        values = {}
+        for param in response['Parameters']:
+            if param['Name'] == '/rds_fms_username':
+                values['user'] = param['Value']
+            elif param['Name'] == '/rds_fms_password':
+                values['pass'] = param['Value']
+        return values
+    except Exception as err:
+        error_handler(sys.exc_info()[2].tb_lineno, err)
 
-        if (http_status == 200 and server_status == 200):
-        # if http_status == 200:
-            status = 0
-        elif (bool(http_status == 200) ^ bool(server_status == 200)):
-            status = 1
-        else:
-            status = 2
 
-        dic_item = { 'name': url_name , 'status': status}
-        dic_list.append(dic_item)
-        log.info("Obtained the Availability status of "+url_name)
-
-    # except requests.ConnectionError as e:
-    except requests.exceptions.RequestException as e:
-    # except:
-        dic_item = { 'name': url_name , 'status': 2}
-        dic_list.append(dic_item)
-        # log.error("Not able to obtain the Availability status of "+url_name)
-        print(e)
-
-def obtain_lambda_avail(lambda_name,func_name):
+#Setting log to STOUT
+def obtain_fms_fresh():
     """
-    obtain the lambda functions State & if they are
-    running without errors
+
     """
-    timenow = datetime.datetime.now()
-    time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
-    timenowconv = timenow.timestamp() * 1000.0
-    time1minconv = time1min.timestamp() * 1000.0
-    lambda_logs = boto3.client('logs',  region_name="eu-west-2")
+    try:
+        values = get_ssm_parameters(
+            ['/rds_fms_username',
+             '/rds_fms_password'])
 
-    filter = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='ERROR', startTime=int(time1minconv),
-                                            endTime=int(timenowconv))
-    message = filter['events']
-    if message == []:
-        lambda_health = 0
-    else:
-        lambda_health = 2
+        conn_parameters = {
+            'host': '127.0.0.1:5001',
+            'dbname': 'fms',
+            'user': values['user'],
+            'password': values['pass'],
+            'sslmode': 'require',
+            'options': '-c statement_timeout=60000'
+        }
 
-    # lambda_item = {lambda_name+'_health': lambda_health}
-    lambda_item = { 'name': lambda_name , 'status': lambda_health}
-    lambda_list.append(lambda_item)
-    log.info("Obtained the Availability status of "+lambda_name)
+        dbstatement = """SELECT DISTINCT file_name from dq_fms.stg_tbl_api"""
 
-def lambda_avail_check():
-    for lam in lambda_func_list:
-        obtain_lambda_avail(lam['name'],lam['func_name'])
+        conn = psycopg2.connect(**conn_parameters)
+        LOGGER.info('Connected to %s', os.environ['rds_address'])
 
-    for lam in lambda_list:
-        if lam['name'] == 'drt_ath':
-            drt_ath_health = lam['status']
-        if lam['name'] == 'drt_jsn':
-            drt_jsn_health = lam['status']
-        if lam['name'] == 'drt_rds':
-            drt_rds_health = lam['status']
-        if lam['name'] == 'bf_api_parsed':
-            bf_api_parsed_health = lam['status']
-        if lam['name'] == 'bf_api_raw':
-            bf_api_raw_health = lam['status']
-        if lam['name'] == 'bf_sch':
-            bf_sch_health = lam['status']
-        if lam['name'] == 'bf_xrs_ath':
-            bf_xrs_ath_health = lam['status']
-        if lam['name'] == 'bf_rls_ath':
-            bf_rls_ath_health = lam['status']
-        if lam['name'] == 'bf_asr_ath':
-            bf_asr_ath_health = lam['status']
-        if lam['name'] == 'bf_as_ath':
-            bf_as_ath_health = lam['status']
+        dbcur = conn.cursor()
 
+        fms_query = dbcur.execute(dbstatement)
+        fms_rows = dbcur.fetchall()
 
-    if (drt_jsn_health == 0 and drt_rds_health == 0 and drt_ath_health == 0):
-        drt_status = 0
-    elif ((bool(drt_jsn_health == 0) ^ bool(drt_rds_health == 0)) ^ bool(drt_ath_health == 0)):
-        drt_status = 1
-    else:
-        drt_status = 2
+        if fms_rows == []:
+            fms_fresh_status = 2
+        else:
+            fms_fresh_status = 0
 
-    dic_item = { 'name': "drt" , 'status': drt_status}
-    dic_list.append(dic_item)
-    log.info("Obtained the Availability status of DRT")
+        dic_item = { 'name': "fms_data" , 'status': fms_freshness}
+        fresh_dic_list.append(dic_item)
 
-    # bf api files
-    if (bf_api_parsed_health == 0 and bf_api_raw_health == 0):
-        bf_api_status = 0
-    elif (bool(bf_api_parsed_health == 0) ^ bool(bf_api_raw_health == 0)):
-        bf_api_status = 1
-    else:
-        bf_api_status = 2
+    except Exception as err:
+        log.error("there is an error connecting to fms db: ",err)
 
-    # bf scoring  files
-    if (bf_xrs_ath_health == 0 and bf_rls_ath_health == 0 and bf_asr_ath_health == 0 and bf_as_ath_health == 0):
-        bf_scr_status =  0
-    elif ((bool(bf_xrs_ath_health == 0) ^ bool(bf_rls_ath_health == 0)) ^ (bool(bf_asr_ath_health == 0) ^ bool(bf_as_ath_health == 0))):
-        bf_scr_status =  1
-    else:
-        bf_scr_status =  2
-
-    #  bf combined state
-    if (bf_api_status == 0 and bf_sch_health == 0 and bf_scr_status == 0):
-        bf_status = 0
-    elif ((bool(bf_api_status == 0) ^ bool(bf_sch_health == 0)) ^ bool(bf_scr_status == 0)):
-        bf_status = 1
-    else:
-        bf_status = 2
-
-    dic_item = { 'name': "bfdp" , 'status': bf_status}
-    dic_list.append(dic_item)
-    log.info("Obtained the Availability status of BFDP")
 
 def service_status_list():
     """
     create a list of services and the 2 or 0 code
     """
-    log.info("Starting to fetch the availability of each service....")
-    dic_list.clear()
-    for service in service_list:
-        obtain_http_code(service['name'], service['url'], service['server'])
 
-    lambda_avail_check()
+    log.info("Starting to fetch the freshness of each service....")
+    fresh_dic_list.clear()
+
+    obtain_fms_fresh()
+    # schedule.every(2).minutes.at(":00").do(obtain_fms_fresh)
+
+    return fresh_dic_list
