@@ -37,8 +37,11 @@ lambda_func_list = [
     {"name": "drt_rds", "func_name": os.environ.get('DRT_RDS_GRP')},
     {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS')},
     {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW')},
-    {"name": "bf_sch", "func_name": os.environ.get('BF_SCH')}
-
+    {"name": "bf_sch", "func_name": os.environ.get('BF_SCH')},
+    {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH')},
+    {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH')},
+    {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH')},
+    {"name": "bf_as_ath", "func_name": os.environ.get('BF_AS_ATH')}
     ]
 
 fms_cert = '/APP/fms-certs/fms_cert'
@@ -136,6 +139,15 @@ def lambda_avail_check():
             bf_api_raw_health = lam['status']
         if lam['name'] == 'bf_sch':
             bf_sch_health = lam['status']
+        if lam['name'] == 'bf_xrs_ath':
+            bf_xrs_ath_health = lam['status']
+        if lam['name'] == 'bf_rls_ath':
+            bf_rls_ath_health = lam['status']
+        if lam['name'] == 'bf_asr_ath':
+            bf_asr_ath_health = lam['status']
+        if lam['name'] == 'bf_as_ath':
+            bf_as_ath_health = lam['status']
+
 
     if (drt_jsn_health == 0 and drt_rds_health == 0 and drt_ath_health == 0):
         drt_status = 0
@@ -146,24 +158,35 @@ def lambda_avail_check():
 
     dic_item = { 'name': "drt" , 'status': drt_status}
     dic_list.append(dic_item)
+    log.info("Obtained the Availability status of DRT")
 
-    if (bf_sch_health == 0 and bf_sch_health == 0):
+    # bf api files
+    if (bf_api_parsed_health == 0 and bf_api_raw_health == 0):
         bf_api_status = 0
-    elif (bool(bf_sch_health == 0) ^ bool(bf_sch_health == 0)):
+    elif (bool(bf_api_parsed_health == 0) ^ bool(bf_api_raw_health == 0)):
         bf_api_status = 1
     else:
         bf_api_status = 2
 
-    if (bf_api_status == 0 and bf_sch_health == 0):
+    # bf scoring  files
+    if (bf_xrs_ath_health == 0 and bf_rls_ath_health == 0 and bf_asr_ath_health == 0 and bf_as_ath_health == 0):
+        bf_scr_status =  0
+    elif ((bool(bf_xrs_ath_health == 0) ^ bool(bf_rls_ath_health == 0)) ^ (bool(bf_asr_ath_health == 0) ^ bool(bf_as_ath_health == 0))):
+        bf_scr_status =  1
+    else:
+        bf_scr_status =  2
+
+    #  bf combined state
+    if (bf_api_status == 0 and bf_sch_health == 0 and bf_scr_status == 0):
         bf_status = 0
-    elif (bool(bf_api_status == 0) ^ bool(bf_sch_health == 0)):
+    elif ((bool(bf_api_status == 0) ^ bool(bf_sch_health == 0)) ^ bool(bf_scr_status == 0)):
         bf_status = 1
     else:
         bf_status = 2
 
     dic_item = { 'name': "bfdp" , 'status': bf_status}
     dic_list.append(dic_item)
-    # log.info("Obtained the Availability status of DRT")
+    log.info("Obtained the Availability status of BFDP")
 
 def service_status_list():
     """
