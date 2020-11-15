@@ -7,7 +7,7 @@ import logging
 import requests
 import datetime
 import boto3
-from operator import itemgetter
+
 # from botocore.config import Config
 
 # CONFIG = Config(

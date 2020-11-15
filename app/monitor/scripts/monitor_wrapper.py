@@ -20,8 +20,8 @@ def write_to_json():
     """
     try:
         f = open("/APP/scripts/tracing.json", "w")
-        print("a.avail_dic_list is: ",a.avail_dic_list)
-        for item in a.avail_dic_list:
+        print("a.avail_dic_list is: ",a())
+        for item in a():
             f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
             f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
         # print("f.fresh_dic_list is: ",f.fresh_dic_list)
