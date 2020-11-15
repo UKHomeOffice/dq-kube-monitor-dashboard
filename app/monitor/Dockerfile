@@ -17,7 +17,7 @@ RUN adduser -D -H 1000 && chown -R 1000 /APP
 
 RUN chmod -R +x /APP/scripts
 
-RUN pip install boto3 schedule requests
+RUN pip install boto3 schedule requests psycopg2
 
 EXPOSE 8000
 
