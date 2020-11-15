@@ -45,7 +45,7 @@ def get_ssm_parameters(param_name_list):
                 values['pass'] = param['Value']
         return values
     except Exception as err:
-        error_handler(sys.exc_info()[2].tb_lineno, err)
+        print(err)
 
 
 #Setting log to STOUT
@@ -57,6 +57,7 @@ def obtain_fms_fresh():
         values = get_ssm_parameters(
             ['/rds_fms_username',
              '/rds_fms_password'])
+        print("values are: ",values)
 
         conn_parameters = {
             'host': '127.0.0.1:5001',
@@ -66,11 +67,12 @@ def obtain_fms_fresh():
             'sslmode': 'require',
             'options': '-c statement_timeout=60000'
         }
+        print("conn param are: ",conn_parameters)
 
         dbstatement = "SELECT DISTINCT file_name from dq_fms.stg_tbl_api"
 
         conn = psycopg2.connect(**conn_parameters)
-        LOGGER.info('Connected to %s', os.environ['rds_address'])
+        LOGGER.info('Connected to fms RDS')
 
         dbcur = conn.cursor()
 
@@ -82,8 +84,9 @@ def obtain_fms_fresh():
         else:
             fms_fresh_status = 0
 
-        dic_item = { 'name': "fms_data" , 'status': fms_freshness}
+        dic_item = { 'name': "fms_data" , 'status': fms_fresh_status}
         fresh_dic_list.append(dic_item)
+        LOGGER.info('Obtained the Freshness status of FMS data')
 
     except Exception as err:
         # log.error("there is an error connecting to fms db: ",err)
