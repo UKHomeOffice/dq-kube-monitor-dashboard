@@ -63,7 +63,7 @@ spec:
             {{ if eq .ENV "prod" }}value: 'cdlz-prod-lambda'{{ end }}
           - name: BF_SCH
             {{ if eq .ENV "notprod" }}value: 'consolidated-schedule-notprod-lambda-athena'{{ end }}
-            {{ if eq .ENV "prod" }}value:'consolidated-schedule-prod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'consolidated-schedule-prod-lambda-athena'{{ end }}
           - name: BF_XRS_ATH
             {{ if eq .ENV "notprod" }}value: 'api-cross-record-scored-notprod-lambda-athena'{{ end }}
             {{ if eq .ENV "prod" }}value: 'api-cross-record-scored-prod-lambda-athena'{{ end }}
