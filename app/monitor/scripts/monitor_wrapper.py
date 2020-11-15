@@ -24,8 +24,8 @@ def write_to_json():
         for item in a():
             f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
             f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
-        print("f.fresh_dic_list is: ",f.fresh_dic_list)
-        for item in f.fresh_dic_list:
+        print("f.fresh_dic_list is: ",f())
+        for item in f():
             f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
             f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
         f.close()
