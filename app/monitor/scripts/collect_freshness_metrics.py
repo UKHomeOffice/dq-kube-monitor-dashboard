@@ -3,13 +3,13 @@ import os,sys,subprocess
 import logging
 import boto3
 import psycopg2
-from botocore.config import Config
-
-CONFIG = Config(
-    retries=dict(
-        max_attempts=20
-    )
-)
+# from botocore.config import Config
+#
+# CONFIG = Config(
+#     retries=dict(
+#         max_attempts=20
+#     )
+# )
 
 #Setting log to STOUT
 log = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ def get_ssm_parameters(param_name_list):
        A dict containing the parameter names and their values
     """
     try:
-        ssm = boto3.client('ssm', region_name="eu-west-2", config=CONFIG)
+        ssm = boto3.client('ssm', region_name="eu-west-2")
         response = ssm.get_parameters(
             Names=param_name_list,
             WithDecryption=True)
