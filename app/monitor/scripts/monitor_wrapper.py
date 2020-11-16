@@ -22,12 +22,12 @@ def write_to_json():
         f = open("/APP/scripts/tracing.json", "w")
         print("a.avail_dic_list is: ",avail())
         for item in avail():
-            f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
+            f.write("# HELP availability_of_"+item['name']+ " to check service availability \n")
             f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
 
         print("f.fresh_dic_list is: ",fresh())
         for item in fresh():
-            f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
+            f.write("# HELP freshness_of_"+item['name']+ " to check data freshness \n")
             f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
         f.close()
         log.info("File created")
