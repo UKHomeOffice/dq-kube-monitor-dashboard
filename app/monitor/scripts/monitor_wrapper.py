@@ -3,8 +3,8 @@ import json
 import time
 import logging
 import schedule
-from collect_avail_metrics import service_status_list as a
-from collect_freshness_metrics import service_status_list as f
+from collect_avail_metrics import service_status_list as avail
+from collect_freshness_metrics import service_status_list as fresh
 
 log = logging.getLogger(__name__)
 out_hdlr = logging.StreamHandler(sys.stdout)
@@ -20,20 +20,19 @@ def write_to_json():
     """
     try:
         f = open("/APP/scripts/tracing.json", "w")
-        print("a.avail_dic_list is: ",a())
-        for item in a():
-            f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
+        print("a.avail_dic_list is: ",avail())
+        for item in avail():
+            f.write("# HELP availability_of_"+item['name']+ " to check service availability \n")
             f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
-        print("f.fresh_dic_list is: ",f())
-        for item in f():
-            f.write("# HELP availability_of_"+item['name']+ " to check the URL uptime \n")
+
+        print("f.fresh_dic_list is: ",fresh())
+        for item in fresh():
+            f.write("# HELP freshness_of_"+item['name']+ " to check data freshness \n")
             f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
         f.close()
         log.info("File created")
     except Exception as e:
         log.error(e)
-
-
 
 def main():
     log.info("Starting Scheduler......")

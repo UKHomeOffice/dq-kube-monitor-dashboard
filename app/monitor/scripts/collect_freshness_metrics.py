@@ -47,8 +47,6 @@ def get_ssm_parameters(param_name_list):
     except Exception as err:
         print(err)
 
-
-#Setting log to STOUT
 def obtain_fms_fresh():
     """
 
@@ -57,17 +55,16 @@ def obtain_fms_fresh():
         values = get_ssm_parameters(
             ['/rds_fms_username',
              '/rds_fms_password'])
-        print("values are: ",values)
 
         conn_parameters = {
-            'host': '127.0.0.1:5001',
+            'host': '127.0.0.1',
+            'port': '5001',
             'dbname': 'fms',
             'user': values['user'],
             'password': values['pass'],
             'sslmode': 'require',
             'options': '-c statement_timeout=60000'
         }
-        print("conn param are: ",conn_parameters)
 
         dbstatement = "SELECT DISTINCT file_name from dq_fms.stg_tbl_api"
 
