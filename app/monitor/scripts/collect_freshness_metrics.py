@@ -69,7 +69,7 @@ def obtain_fms_fresh():
         dbstatement = "SELECT DISTINCT file_name from dq_fms.stg_tbl_api"
 
         conn = psycopg2.connect(**conn_parameters)
-        LOGGER.info('Connected to fms RDS')
+        log.info('Connected to fms RDS')
 
         dbcur = conn.cursor()
 
@@ -83,7 +83,7 @@ def obtain_fms_fresh():
 
         dic_item = { 'name': "fms_data" , 'status': fms_fresh_status}
         fresh_dic_list.append(dic_item)
-        LOGGER.info('Obtained the Freshness status of FMS data')
+        log.info('Obtained the Freshness status of FMS data')
 
     except Exception as err:
         # log.error("there is an error connecting to fms db: ",err)
