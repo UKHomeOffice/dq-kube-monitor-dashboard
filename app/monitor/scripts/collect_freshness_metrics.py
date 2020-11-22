@@ -138,11 +138,11 @@ def obtain_gait_fresh():
 
         conn_parameters = {
             'host': '127.0.0.1',
-            'port': '8082',
+            'port': '5002',
             'dbname': 'dqgaitrds2',
             'user': values['user'],
             'password': values['pass'],
-            'sslmode': 'require',
+            # 'sslmode': 'require',
             'options': '-c statement_timeout=60000'
         }
 
@@ -150,7 +150,7 @@ def obtain_gait_fresh():
         dbstatement_gar = """SELECT created_at FROM gama_gar WHERE "created_at" >= NOW() - INTERVAL '5 minutes' order by created_at desc"""
 
         conn = psycopg2.connect(**conn_parameters)
-        log.info('Connected to fms RDS')
+        log.info('Connected to GAIT RDS')
 
         dbcur = conn.cursor()
 
