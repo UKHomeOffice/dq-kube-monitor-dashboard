@@ -3,7 +3,6 @@ import os,sys,subprocess
 import logging
 import boto3
 import psycopg2
-import time
 # from botocore.config import Config
 #
 # CONFIG = Config(
