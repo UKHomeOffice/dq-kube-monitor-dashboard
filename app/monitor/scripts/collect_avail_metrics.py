@@ -38,6 +38,7 @@ lambda_func_list = [
     {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS')},
     {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW')},
     {"name": "bf_sch", "func_name": os.environ.get('BF_SCH')},
+
     {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH')},
     {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH')},
     {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH')},

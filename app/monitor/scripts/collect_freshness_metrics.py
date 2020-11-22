@@ -103,11 +103,12 @@ def obtain_fms_fresh():
         fresh_dic_list.append(dic_item)
         log.info('Obtained the Freshness status of FMS data')
 
-    except Exception as err:
+    # except Exception as err:
+    except:
         # log.error("there is an error connecting to fms db: ",err)
         dic_item = { 'name': "fms_data" , 'status': 2}
         fresh_dic_list.append(dic_item)
-        print (err)
+        print ("fms db error")
 
 # def final_fms_check():
 #     temp_fms_list.clear()
@@ -178,19 +179,20 @@ def obtain_gait_fresh():
         fresh_dic_list.append(dic_item)
         log.info('Obtained the Freshness status of GAIT data')
 
-    except Exception as err:
+    # except Exception as err:
+    except:
         # log.error("there is an error connecting to fms db: ",err)
         dic_item = { 'name': "gait_data" , 'status': 2}
         fresh_dic_list.append(dic_item)
-        print (err)
+        print ("gait db error")
 
 def service_status_list():
     """
     create a list of services and the 2 or 0 code
     """
 
-    fresh_dic_list = []
-    dic_item  = {}
+    # fresh_dic_list = []
+    # dic_item  = {}
 
     log.info("Starting to fetch the freshness of each service....")
     fresh_dic_list.clear()
