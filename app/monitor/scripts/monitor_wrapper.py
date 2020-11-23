@@ -13,8 +13,10 @@ out_hdlr.setLevel(logging.INFO)
 log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
-def retreive_fresh():
-    fresh_list = fresh()
+fresh_list = []
+
+# def retreive_fresh():
+#     fresh_list = fresh()
 
 def write_to_json():
     """
@@ -28,8 +30,8 @@ def write_to_json():
             f.write("# HELP availability_of_"+item['name']+ " to check service availability \n")
             f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
 
-        print("fresh_dic_list is: ",fresh_list)
-        for item in fresh_list:
+        print("fresh_dic_list is: ",fresh())
+        for item in fresh():
             f.write("# HELP freshness_of_"+item['name']+ " to check data freshness \n")
             f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
         f.close()
@@ -38,10 +40,9 @@ def write_to_json():
         log.error(e)
 
 def main():
-    fresh_list = []
     log.info("Starting Scheduler......")
     schedule.every(1).minutes.at(":00").do(write_to_json)
-    schedule.every(5).minutes.at(":00").do(retreive_fresh)
+    # schedule.every(5).minutes.at(":00").do(retreive_fresh)
     while True:
         schedule.run_pending()
         time.sleep(1)
