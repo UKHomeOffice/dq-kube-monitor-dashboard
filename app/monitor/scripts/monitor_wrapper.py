@@ -31,7 +31,7 @@ def write_to_json():
             f.write("# HELP availability_of_"+item['name']+ " to check service availability \n")
             f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
 
-        print("fresh_dic_list is: ",fresh_list
+        print("fresh_dic_list is: ",fresh_list)
         for item in fresh_list:
             f.write("# HELP freshness_of_"+item['name']+ " to check data freshness \n")
             f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
