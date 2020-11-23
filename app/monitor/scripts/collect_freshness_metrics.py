@@ -142,7 +142,7 @@ def obtain_gait_fresh():
             'dbname': 'dqgaitrds2',
             'user': values['user'],
             'password': values['pass'],
-            # 'sslmode': 'require',
+            'sslmode': 'require',
             'options': '-c statement_timeout=60000'
         }
 
