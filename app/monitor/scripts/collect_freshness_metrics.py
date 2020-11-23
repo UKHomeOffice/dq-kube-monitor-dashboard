@@ -104,6 +104,7 @@ def obtain_fms_fresh():
         dic_item = { 'name': "fms_data" , 'status': status}
         fresh_dic_list.append(dic_item)
         log.info('Obtained the Freshness status of FMS data')
+        dbcur.close()
 
     # except Exception as err:
     except:
@@ -180,6 +181,7 @@ def obtain_gait_fresh():
         dic_item = { 'name': "gait_data" , 'status': status}
         fresh_dic_list.append(dic_item)
         log.info('Obtained the Freshness status of GAIT data')
+        dbcur.close()
 
     # except Exception as err:
     except Exception as e:
