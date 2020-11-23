@@ -141,7 +141,7 @@ spec:
           - name: HOST
             value: '10.3.0.11'
           - name: PORT
-            value: '8082'
+            value: '8087'
         ports:
           - containerPort: 5002
       volumes:
