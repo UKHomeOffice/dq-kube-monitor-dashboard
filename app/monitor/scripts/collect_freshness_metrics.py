@@ -222,7 +222,7 @@ def obtain_drt_fresh():
     """
     try:
         rds_list.clear()
-        drt_rds = log_filter_pagi('drt-prod-lambda-rds',5,'committed')
+        drt_rds = log_filter_pagi(os.environ.get('DRT_RDS_GRP'),5,'committed')
         for page in drt_rds:
             for i in page['events']:
                 if not '0 rows' in i['message']:
@@ -233,7 +233,7 @@ def obtain_drt_fresh():
             drt_rds_status = 0
 
         json_list.clear()
-        drt_json = log_filter_pagi('drt-prod-json-lambda',15,'Total events')
+        drt_json = log_filter_pagi(os.environ.get('DRT_JSN_GRP'),15,'Total events')
         for page in drt_json:
             for i in page['events']:
                 if 'Total events' in i['message']:
