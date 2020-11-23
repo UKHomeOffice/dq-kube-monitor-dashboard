@@ -13,11 +13,8 @@ out_hdlr.setLevel(logging.INFO)
 log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
-fresh_list = []
-
 def retreive_fresh():
     fresh_list = fresh()
-    return fresh_list
 
 def write_to_json():
     """
@@ -41,6 +38,7 @@ def write_to_json():
         log.error(e)
 
 def main():
+    fresh_list = []
     log.info("Starting Scheduler......")
     schedule.every(1).minutes.at(":00").do(write_to_json)
     schedule.every(5).minutes.at(":00").do(retreive_fresh)
