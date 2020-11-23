@@ -19,7 +19,10 @@ out_hdlr.setLevel(logging.INFO)
 log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
+active_region = 'eu-west-2'
 fresh_dic_list = []
+rds_list = []
+json_list = []
 # temp_fms_list = []
 dic_item  = {}
 
@@ -34,19 +37,41 @@ def get_ssm_parameters(param_name_list):
        A dict containing the parameter names and their values
     """
     try:
-        ssm = boto3.client('ssm', region_name="eu-west-2")
+        ssm = boto3.client('ssm', region_name=active_region)
         response = ssm.get_parameters(
             Names=param_name_list,
             WithDecryption=True)
         values = {}
         for param in response['Parameters']:
             if "name" in param['Name']:
-            # if param['Name'] == '/rds_fms_username':
                 values['user'] = param['Value']
             elif "password" in param['Name']:
-            # elif param['Name'] == '/rds_fms_password':
                 values['pass'] = param['Value']
         return values
+    except Exception as err:
+        print(err)
+
+def log_filter_pagi(log_group,min,filter):
+    """
+    obtain CW logs filtered results by providing
+
+    log_group: (string) log group name
+    min: (intiger) No of minutes for logs to be parsed for the provided filter
+    filter: (string) value matching the text to search/pasre the log group for
+    """
+    try:
+        timenow = datetime.datetime.now()
+        timebefore = datetime.datetime.now() - datetime.timedelta(minutes=min)
+        timenowconv = timenow.timestamp() * 1000.0
+        timebeforeconv = time1min.timestamp() * 1000.0
+
+        lambda_logs = boto3.client('logs', region_name=active_region)
+        paginator = lambda_logs.get_paginator('filter_log_events')
+        pages = paginator.paginate(logGroupName='/aws/lambda/'+log_group,
+                                                filterPattern=filter, startTime=int(timebeforeconv),
+                                                endTime=int(timenowconv))
+        return pages
+
     except Exception as err:
         print(err)
 
@@ -104,6 +129,7 @@ def obtain_fms_fresh():
         dic_item = { 'name': "fms_data" , 'status': status}
         fresh_dic_list.append(dic_item)
         log.info('Obtained the Freshness status of FMS data')
+        dbcur.close()
 
     # except Exception as err:
     except:
@@ -180,6 +206,7 @@ def obtain_gait_fresh():
         dic_item = { 'name': "gait_data" , 'status': status}
         fresh_dic_list.append(dic_item)
         log.info('Obtained the Freshness status of GAIT data')
+        dbcur.close()
 
     # except Exception as err:
     except Exception as e:
@@ -187,6 +214,49 @@ def obtain_gait_fresh():
         dic_item = { 'name': "gait_data" , 'status': 2}
         fresh_dic_list.append(dic_item)
         print ("gait db error: ",e)
+
+def obtain_drt_fresh():
+    """
+    Query DRT pipline for fiels pusheed top datafeed and
+    JSON files to DRT S3
+    """
+    try:
+        rds_list.clear()
+        drt_rds = log_filter_pagi(os.environ.get('DRT_RDS_GRP'),5,'committed')
+        for page in drt_rds:
+            for i in page['events']:
+                if not '0 rows' in i['message']:
+                    rds_list.append(i['message'])
+        if rds_list == []:
+            drt_rds_status = 2
+        else:
+            drt_rds_status = 0
+
+        json_list.clear()
+        drt_json = log_filter_pagi(os.environ.get('DRT_JSN_GRP'),15,'Total events')
+        for page in drt_json:
+            for i in page['events']:
+                if 'Total events' in i['message']:
+                    json_list.append(i['message'])
+        if json_list == []:
+            drt_json_status = 2
+        else:
+            drt_json_status = 0
+
+        if (drt_rds_status == 0 and drt_json_status == 0):
+            status = 0
+        elif (bool(drt_rds_status == 0) ^ bool(drt_json_status == 0)):
+            status = 1
+        else:
+            status = 2
+        dic_item = { 'name': "drt_data" , 'status': status}
+        fresh_dic_list.append(dic_item)
+        log.info('Obtained the Freshness status of DRT data')
+
+    except Exception as e:
+        dic_item = { 'name': "drt_data" , 'status': 2}
+        fresh_dic_list.append(dic_item)
+        print ("DRT data error: ",e)
 
 def service_status_list():
     """
@@ -200,5 +270,6 @@ def service_status_list():
     fresh_dic_list.clear()
     obtain_fms_fresh()
     obtain_gait_fresh()
+    obtain_drt_fresh()
 
     return fresh_dic_list
