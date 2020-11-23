@@ -40,9 +40,11 @@ def get_ssm_parameters(param_name_list):
             WithDecryption=True)
         values = {}
         for param in response['Parameters']:
-            if param['Name'] == '/rds_fms_username':
+            if "name" in param['Name']:
+            # if param['Name'] == '/rds_fms_username':
                 values['user'] = param['Value']
-            elif param['Name'] == '/rds_fms_password':
+            elif "password" in param['Name']:
+            # elif param['Name'] == '/rds_fms_password':
                 values['pass'] = param['Value']
         return values
     except Exception as err:
