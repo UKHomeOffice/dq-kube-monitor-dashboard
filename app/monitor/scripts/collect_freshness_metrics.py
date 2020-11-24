@@ -96,8 +96,8 @@ def obtain_fms_fresh():
             'options': '-c statement_timeout=60000'
         }
 
-        dbstatement_vio = """SELECT dv_load_dt FROM dq_fms.tbl_aviation_violations_status_by_schedule_stage WHERE "dv_load_dt" >= NOW() - INTERVAL '5 minutes' order by dv_load_dt desc"""
-        dbstatement_con = """SELECT cs_lastupdated FROM dq_fms.tbl_consolidated_schedule WHERE "cs_lastupdated" >= NOW() - INTERVAL '5 minutes' order by cs_lastupdated desc"""
+        dbstatement_vio = """SELECT dv_load_dt FROM dq_fms.tbl_aviation_violations_status_by_schedule_stage WHERE "dv_load_dt" >= NOW() - INTERVAL '10 minutes' order by dv_load_dt desc"""
+        dbstatement_con = """SELECT cs_lastupdated FROM dq_fms.tbl_consolidated_schedule WHERE "cs_lastupdated" >= NOW() - INTERVAL '10 minutes' order by cs_lastupdated desc"""
 
         #dbstatement = "SELECT DISTINCT file_name from dq_fms.stg_tbl_api"
 
