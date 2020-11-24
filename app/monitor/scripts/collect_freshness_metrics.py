@@ -64,7 +64,7 @@ def log_filter_pagi(log_group,min,filter):
         timenow = datetime.datetime.now()
         timebefore = datetime.datetime.now() - datetime.timedelta(minutes=min)
         timenowconv = timenow.timestamp() * 1000.0
-        timebeforeconv = time1min.timestamp() * 1000.0
+        timebeforeconv = timebefore.timestamp() * 1000.0
 
         lambda_logs = boto3.client('logs', region_name=active_region)
         paginator = lambda_logs.get_paginator('filter_log_events')
