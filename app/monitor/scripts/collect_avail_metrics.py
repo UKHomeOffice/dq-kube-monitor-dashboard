@@ -169,6 +169,10 @@ def lambda_avail_check():
     else:
         bf_api_status = 2
 
+    dic_item = { 'name': "bf_api" , 'status': bf_api_status}
+    avail_dic_list.append(dic_item)
+    log.info("Obtained the Availability status of BFDP API")
+
     # bf scoring  files
     if (bf_xrs_ath_health == 0 and bf_rls_ath_health == 0 and bf_asr_ath_health == 0 and bf_as_ath_health == 0):
         bf_scr_status =  0
@@ -177,17 +181,21 @@ def lambda_avail_check():
     else:
         bf_scr_status =  2
 
-    #  bf combined state
-    if (bf_api_status == 0 and bf_sch_health == 0 and bf_scr_status == 0):
-        bf_status = 0
-    elif ((bool(bf_api_status == 0) ^ bool(bf_sch_health == 0)) ^ bool(bf_scr_status == 0)):
-        bf_status = 1
-    else:
-        bf_status = 2
-
-    dic_item = { 'name': "bfdp" , 'status': bf_status}
+    dic_item = { 'name': "bf_scr" , 'status': bf_scr_status}
     avail_dic_list.append(dic_item)
-    log.info("Obtained the Availability status of BFDP")
+    log.info("Obtained the Availability status of BFDP SCR")
+
+    #  bf combined state
+    # if (bf_api_status == 0 and bf_sch_health == 0 and bf_scr_status == 0):
+    #     bf_status = 0
+    # elif ((bool(bf_api_status == 0) ^ bool(bf_sch_health == 0)) ^ bool(bf_scr_status == 0)):
+    #     bf_status = 1
+    # else:
+    #     bf_status = 2
+
+    dic_item = { 'name': "bf_sch" , 'status': bf_sch_health}
+    avail_dic_list.append(dic_item)
+    log.info("Obtained the Availability status of BFDP SCH")
 
 def service_status_list():
     """
