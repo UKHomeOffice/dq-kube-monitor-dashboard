@@ -98,7 +98,7 @@ def obtain_fms_fresh():
 
         dbstatement_vio = """SELECT dv_load_dt FROM dq_fms.tbl_aviation_violations_status_by_schedule_stage WHERE "dv_load_dt" >= NOW() - INTERVAL '10 minutes' order by dv_load_dt desc"""
         dbstatement_con = """SELECT cs_lastupdated FROM dq_fms.tbl_consolidated_schedule WHERE "cs_lastupdated" >= NOW() - INTERVAL '10 minutes' order by cs_lastupdated desc"""
-
+        # dbstatement = "select * from dq_fms.tbl_aviation_violations_status_by_schedule order by ssm_std_datetime_utc desc limit 5"
         #dbstatement = "SELECT DISTINCT file_name from dq_fms.stg_tbl_api"
 
         conn = psycopg2.connect(**conn_parameters)
@@ -258,6 +258,12 @@ def obtain_drt_fresh():
         dic_item = { 'name': "drt_data" , 'status': 2}
         fresh_dic_list.append(dic_item)
         print ("DRT data error: ",e)
+
+# def obtainn_bfdp_fresh():
+#
+#     x=datetime.today()
+#     y = x.replace(day=x.day, hour=1, minute=0, second=0, microsecond=0) - timedelta(days=1)
+#     delta_t=y-x
 
 def service_status_list():
     """
