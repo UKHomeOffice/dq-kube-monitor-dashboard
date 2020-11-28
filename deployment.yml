@@ -144,6 +144,21 @@ spec:
             value: '8087'
         ports:
           - containerPort: 5002
+        - name: opensslsidekick-tab-rds
+          image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
+          imagePullPolicy: Always
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+          env:
+            - name: EXPOSED_PORT
+              value: '5003'
+            - name: HOST
+              value: '10.3.0.11'
+            - name: PORT
+              value: '8084'
+          ports:
+            - containerPort: 5003
       volumes:
         - name: dq-monitor-storage
           persistentVolumeClaim:
