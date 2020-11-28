@@ -96,19 +96,28 @@ def obtain_fms_fresh():
         }
 
         day = datetime.datetime.today()
-        nday = day + datetime.timedelta(days=1)
+        nextday = day + datetime.timedelta(days=1)
+        prevday = day - datetime.timedelta(days=1)
         today = day.strftime("%Y-%m-%d")
-        nextday = nday.strftime("%Y-%m-%d")
+        nextday = nextday.strftime("%Y-%m-%d")
+        prevday = prevday.strftime("%Y-%m-%d")
 
-        dbstatement = "select count (voyage_number) from dq_fms.tbl_aviation_violations_status_by_schedule where ssm_std_datetime_utc >= '"+today+" 00:00:00' AND  ssm_std_datetime_utc < '"+nextday+" 00:00:00'"
+        # to allow for low number of flights in teh early mornings
+        now = datetime.datetime.now()
+        if now.hour >= 0 and now.hour < 6:
+            day1 = prevday
+            day2 = today
+        else:
+            day1 = today
+            day2 = nextday
+
+        dbstatement = "select count (voyage_number) from dq_fms.tbl_aviation_violations_status_by_schedule where ssm_std_datetime_utc >= '"+day1+" 00:00:00' AND  ssm_std_datetime_utc < '"+day2+" 00:00:00'"
         conn = psycopg2.connect(**conn_parameters)
-        log.info('Connected to fms db')
+        log.info('Connected to FMS RDS DB')
 
         dbcur = conn.cursor()
-
         fms_query = dbcur.execute(dbstatement)
         fms_rows = dbcur.fetchall()
-
         result = str(fms_rows[0])[1:-2]
 
         if int(result) >= 5:
@@ -124,12 +133,10 @@ def obtain_fms_fresh():
         log.info('Obtained the Freshness status of FMS data')
         dbcur.close()
 
-    # except Exception as err:
-    except:
-        # log.error("there is an error connecting to fms db: ",err)
+    except Exception as e:
         dic_item = { 'name': "fms_data" , 'status': 2}
         fresh_dic_list.append(dic_item)
-        print ("fms db connection error")
+        print ("fms db connection error", e)
 
 # def final_fms_check():
 #     temp_fms_list.clear()
@@ -270,13 +277,13 @@ def obtainn_bfdp_fresh():
         dbcur = conn.cursor()
         query = dbcur.execute(dbstatement)
         rows = dbcur.fetchall()
+
         latest = str(rows[0])[1:-2]
         latest = eval(latest).strftime("%H:%M:%S")
         now = datetime.datetime.now()
         now = now.strftime("%H:%M:%S")
-
         FMT = '%H:%M:%S'
-        tdelta = datetime.datetime.strptime(nows, FMT) - datetime.datetime.strptime(latest, FMT)
+        tdelta = datetime.datetime.strptime(now, FMT) - datetime.datetime.strptime(latest, FMT)
         if tdelta.days < 0:
             tdelta = datetime.timedelta(days=0,seconds=tdelta.seconds, microseconds=tdelta.microseconds)
 
