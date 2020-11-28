@@ -129,7 +129,7 @@ def obtain_fms_fresh():
         # log.error("there is an error connecting to fms db: ",err)
         dic_item = { 'name': "fms_data" , 'status': 2}
         fresh_dic_list.append(dic_item)
-        log.error("fms db connection error")
+        print ("fms db connection error")
 
 # def final_fms_check():
 #     temp_fms_list.clear()
@@ -197,7 +197,7 @@ def obtain_gait_fresh():
         # log.error("there is an error connecting to fms db: ",err)
         dic_item = { 'name': "gait_data" , 'status': 2}
         fresh_dic_list.append(dic_item)
-        log.error("gait db connection error: ",e)
+        print ("gait db connection error: ",e)
 
 def obtain_drt_fresh():
     """
@@ -240,7 +240,7 @@ def obtain_drt_fresh():
     except Exception as e:
         dic_item = { 'name': "drt_data" , 'status': 2}
         fresh_dic_list.append(dic_item)
-        log.error("DRT data error: ",e)
+        print ("DRT data error: ",e)
 
 def obtainn_bfdp_fresh():
     """
@@ -297,7 +297,7 @@ def obtainn_bfdp_fresh():
     except Exception as e:
         dic_item = { 'name': "bfdp_data" , 'status': 2}
         fresh_dic_list.append(dic_item)
-        log.error("Internal Tableau DB connection error: ",e)
+        print ("Internal Tableau DB connection error: ",e)
 
 def service_status_list():
     """
