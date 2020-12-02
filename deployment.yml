@@ -46,6 +46,9 @@ spec:
             {{ if eq .ENV "prod" }}value: 'http://gait.dq.homeoffice.gov.uk'{{ end }}
           - name: TAB_URL
             value: 'http://127.0.0.1:5000'
+          - name: TAB_API_VERSION
+            {{ if eq .ENV "notprod" }}value: '3.9'{{ end }}
+            {{ if eq .ENV "prod" }}value: '3.7'{{ end }}
           - name: DRT_JSN_GRP
             {{ if eq .ENV "notprod" }}value: 'drt-notprod-json-lambda'{{ end }}
             {{ if eq .ENV "prod" }}value: 'drt-prod-json-lambda'{{ end }}
@@ -96,8 +99,8 @@ spec:
         volumeMounts:
           - mountPath: /APP/share
             name: dq-monitor-storage
-          - mountPath: /APP/fms-certs
-            name: fms-cert-key
+          - mountPath: /APP/auth-files
+            name: auth-files
             readOnly: true
       - name: opensslsidekick-tab
         image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
@@ -163,6 +166,6 @@ spec:
         - name: dq-monitor-storage
           persistentVolumeClaim:
             claimName: dq-monitor-storage
-        - name: fms-cert-key
+        - name: auth-files
           secret:
-            secretName: fms-cert-key
+            secretName: auth-files

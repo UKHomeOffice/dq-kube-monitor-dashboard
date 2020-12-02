@@ -4,6 +4,8 @@ import logging
 import boto3
 import psycopg2
 import datetime
+import requests
+import xml.etree.cElementTree as et
 # from botocore.config import Config
 #
 # CONFIG = Config(
@@ -306,9 +308,56 @@ def obtainn_bfdp_fresh():
         fresh_dic_list.append(dic_item)
         print ("Internal Tableau DB connection error: ",e)
 
+def obtain_inttab_fresh():
+    try:
+
+        # Obtain the
+        auth_xml = '/APP/auth-files/auth_xml'
+        tab_url = os.environ.get('TAB_URL')
+        api_version = os.environ.get('TAB_API_VERSION')
+        auth_url = "http://"+tab_url+"/api/"+api_version+"/auth/signin"
+        headers = {'Content-Type': 'application/xml'}
+        with open(auth_xml, 'r') as file:
+            userdata = file.read()
+
+        req = requests.post(auth_url , data=userdata, headers=headers)
+        root = et.fromstring(req.content)
+        for child in root.iter('*'):
+            if 'credentials' in child.tag:
+                token = child.attrib.get('token')
+            elif 'site' in child.tag:
+                siteid = child.attrib.get('id')
+
+        # Obtain the refresh jobs status
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
+        ref_url="http://"+tab_url+"/api/"+api_version+"/sites/"+siteid+"/jobs?filter=startedAt:gt:"+today+"T00:00:00z"
+        ref_req = requests.get(ref_url , headers={'X-Tableau-Auth': token})
+        root_ref = et.fromstring(ref_req.content)
+        for child in root_ref.iter('*'):
+            if 'backgroundJob' in child.tag:
+                 count = count++1
+                 jobid = child.attrib.get('id')
+                 jobstatus = child.attrib.get('status')
+                 jobtype = child.attrib.get('jobType')
+                 if jobstatus == "Success":
+                     tab_data = 0
+                 elif jobstatus == "Running":
+                     tab_data = 1
+                 elif jobstatus == "Failed":
+                     tab_data = 2
+
+        dic_item = { 'name': "tab_data" , 'status': tab_data}
+        fresh_dic_list.append(dic_item)
+        log.info('Obtained the Freshness status of DQ Reporting Dash')
+
+    except Exception as e:
+        dic_item = { 'name': "tab_data" , 'status': 2}
+        fresh_dic_list.append(dic_item)
+        print ("DQ Reporting Dash connection error: ",e)
+
 def service_status_list():
     """
-    create a list of services and the 2 or 0 code
+    create a list of services and the 2, 1 or 0 code
     """
 
     log.info("Starting to fetch the freshness of each service....")
@@ -317,5 +366,6 @@ def service_status_list():
     obtain_gait_fresh()
     obtain_drt_fresh()
     obtainn_bfdp_fresh()
+    obtain_inttab_fresh()
 
     return fresh_dic_list
