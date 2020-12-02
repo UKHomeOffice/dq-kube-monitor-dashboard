@@ -310,15 +310,20 @@ def obtainn_bfdp_fresh():
 
 def obtain_inttab_fresh():
     try:
-
         # Obtain the
-        auth_xml = '/APP/auth-files/auth_xml'
+        userdata = """
+        <tsRequest>
+        <credentials name="tab_admin" password="""+os.environ.get('TAB_ADMIN_PWD')+""">
+                <site contentUrl="DQDashboards" />
+        </credentials>
+        </tsRequest>
+        """
         tab_url = os.environ.get('TAB_URL')
         api_version = os.environ.get('TAB_API_VERSION')
         auth_url = "http://"+tab_url+"/api/"+api_version+"/auth/signin"
         headers = {'Content-Type': 'application/xml'}
-        with open(auth_xml, 'r') as file:
-            userdata = file.read()
+        # with open(auth_xml, 'r') as file:
+        #     userdata = file.read()
 
         req = requests.post(auth_url , data=userdata, headers=headers)
         root = et.fromstring(req.content)
