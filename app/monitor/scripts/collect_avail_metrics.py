@@ -28,7 +28,10 @@ service_list= [
     {"name": "gait", "url": os.environ.get('GAIT_URL'), "server": 'http://ga-app-service:3000'},
     {"name": "fms", "url": os.environ.get('FMS_URL'), "server": 'http://fms:3000'},
     {"name": "crt", "url": os.environ.get('CRT_URL'), "server": 'http://crt-service:10443'},
-    {"name": "tab", "url": os.environ.get('TAB_URL'), "server": os.environ.get('TAB_URL')}
+    {"name": "tab", "url": os.environ.get('TAB_URL'), "server": os.environ.get('TAB_URL')},
+    # {"name": "gait_api", "url": 'http://dq-gait-api-data-consumer:6066', "server": 'dq-gait-api-data-consumer'},
+    # {"name": "gait_sgar", "url": 'http://dq-gait-sgar-consumer:6066', "server": 'dq-gait-api-data-consumer'},
+    # {"name": "api-msk", "url": 'http://dq-api-msk-consumer:6066', "server": 'dq-api-msk-consumer'}
     ]
 
 lambda_func_list = [
@@ -38,7 +41,6 @@ lambda_func_list = [
     {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS')},
     {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW')},
     {"name": "bf_sch", "func_name": os.environ.get('BF_SCH')},
-
     {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH')},
     {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH')},
     {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH')},
