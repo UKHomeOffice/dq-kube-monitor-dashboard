@@ -69,7 +69,7 @@ def obtain_http_code(url_name, url, server):
             server_status = 200
         elif url_name == 'tab':
             http_status = requests.get(url).status_code
-            log.info("tab http_status is "+http_status)
+            log.info("tab http_status is "+str(http_status))
             # server_status = 200
             server_info = requests.get(url+"/admin/systeminfo.xml").text
             log.info("tab server_info is "+server_info)
