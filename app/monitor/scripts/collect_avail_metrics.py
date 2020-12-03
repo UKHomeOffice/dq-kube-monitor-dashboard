@@ -53,6 +53,7 @@ lambda_func_list = [
 fms_cert = '/APP/auth-files/fms_cert'
 fms_key = '/APP/auth-files/fms_key'
 avail_dic_list = []
+avail_api_pod_list = []
 lambda_list = []
 dic_item  = {}
 lambda_item = {}
@@ -228,7 +229,7 @@ def lambda_avail_check():
     avail_dic_list.append(dic_item)
     log.info("Obtained the Availability status of BFDP SCR")
 
-    #  bf combined state
+    #  bf Scheduling state
     # if (bf_api_status == 0 and bf_sch_health == 0 and bf_scr_status == 0):
     #     bf_status = 0
     # elif ((bool(bf_api_status == 0) ^ bool(bf_sch_health == 0)) ^ bool(bf_scr_status == 0)):
