@@ -86,7 +86,7 @@ pipeline:
 
     when:
       environment: production
-      branch: master
+      # branch: master
       event: deployment
 
   delete_prod:
