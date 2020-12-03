@@ -5,7 +5,7 @@ import boto3
 import psycopg2
 import datetime
 import requests
-import xml.etree.cElementTree as et
+import xml.etree.ElementTree as et
 # from botocore.config import Config
 #
 # CONFIG = Config(
