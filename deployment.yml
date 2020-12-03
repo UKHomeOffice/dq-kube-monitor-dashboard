@@ -94,6 +94,11 @@ spec:
               secretKeyRef:
                 name: dq-monitor-secrets
                 key: AWS_DEFAULT_REGION
+          - name: TAB_ADMIN_PWD
+            valueFrom:
+              secretKeyRef:
+                name: dq-monitor-secrets
+                key: TAB_ADMIN_PWD
         ports:
           - containerPort: 8000
         volumeMounts:
