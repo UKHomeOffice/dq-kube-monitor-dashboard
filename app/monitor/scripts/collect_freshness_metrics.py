@@ -320,7 +320,7 @@ def obtain_inttab_fresh():
         """
         tab_url = os.environ.get('TAB_URL')
         api_version = os.environ.get('TAB_API_VERSION')
-        auth_url = "http://"+tab_url+"/api/"+api_version+"/auth/signin"
+        auth_url = tab_url+"/api/"+api_version+"/auth/signin"
         headers = {'Content-Type': 'application/xml'}
         # with open(auth_xml, 'r') as file:
         #     userdata = file.read()
@@ -335,7 +335,7 @@ def obtain_inttab_fresh():
 
         # Obtain the refresh jobs status
         today = datetime.datetime.now().strftime("%Y-%m-%d")
-        ref_url="http://"+tab_url+"/api/"+api_version+"/sites/"+siteid+"/jobs?filter=startedAt:gt:"+today+"T00:00:00z"
+        ref_url=tab_url+"/api/"+api_version+"/sites/"+siteid+"/jobs?filter=startedAt:gt:"+today+"T00:00:00z"
         ref_req = requests.get(ref_url , headers={'X-Tableau-Auth': token})
         root_ref = et.fromstring(ref_req.content)
         for child in root_ref.iter('*'):
