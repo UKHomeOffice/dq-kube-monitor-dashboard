@@ -337,7 +337,6 @@ def obtain_inttab_fresh():
         root_ref = et.fromstring(ref_req.content)
         for child in root_ref.iter('*'):
             if 'backgroundJob' in child.tag:
-                 count = count++1
                  jobid = child.attrib.get('id')
                  jobstatus = child.attrib.get('status')
                  jobtype = child.attrib.get('jobType')
