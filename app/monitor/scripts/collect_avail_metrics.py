@@ -28,11 +28,14 @@ service_list= [
     {"name": "gait", "url": os.environ.get('GAIT_URL'), "server": 'http://ga-app-service:3000'},
     {"name": "fms", "url": os.environ.get('FMS_URL'), "server": 'http://fms:3000'},
     {"name": "crt", "url": os.environ.get('CRT_URL'), "server": 'http://crt-service:10443'},
-    {"name": "tab", "url": os.environ.get('TAB_URL'), "server": os.environ.get('TAB_URL')},
-    # {"name": "gait_api", "url": 'http://dq-gait-api-data-consumer:6066', "server": 'dq-gait-api-data-consumer'},
-    # {"name": "gait_sgar", "url": 'http://dq-gait-sgar-consumer:6066', "server": 'dq-gait-api-data-consumer'},
-    # {"name": "api-msk", "url": 'http://dq-api-msk-consumer:6066', "server": 'dq-api-msk-consumer'}
+    {"name": "tab", "url": os.environ.get('TAB_URL'), "server": os.environ.get('TAB_URL')}
     ]
+
+api_pod_list = [
+    {"name": "gait_api", "url": 'http://dq-gait-api-data-consumer:6066'},
+    {"name": "gait_sgar", "url": 'http://dq-gait-sgar-consumer:6066'},
+    {"name": "api-msk", "url": 'http://dq-api-msk-consumer:6066'}
+]
 
 lambda_func_list = [
     {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP')},
@@ -100,6 +103,16 @@ def obtain_http_code(url_name, url, server):
         # log.error("Not able to obtain the Availability status of "+url_name)
         print(e)
 
+def obtain_api_pod_avail():
+    for pod in api_pod_list:
+        http_status = requests.get(pod['url']).text
+        if 'OK' in http_status:
+            status = 0
+        else:
+            status = 2
+        dic_item = { 'name': pod['name'] , 'status': status}
+        avail_api_pod_list.append(dic_item)
+
 def obtain_lambda_avail(lambda_name,func_name):
     """
     obtain the lambda functions State & if they are
@@ -151,12 +164,15 @@ def lambda_avail_check():
         if lam['name'] == 'bf_as_ath':
             bf_as_ath_health = lam['status']
 
-
-    if (drt_jsn_health == 0 and drt_rds_health == 0 and drt_ath_health == 0):
+    if drt_jsn_health == 0 and drt_rds_health == 0 and drt_ath_health == 0:
         drt_status = 0
-    elif ((bool(drt_jsn_health == 0) ^ bool(drt_rds_health == 0)) ^ bool(drt_ath_health == 0)):
+    if drt_jsn_health != 0:
         drt_status = 1
-    else:
+    if drt_rds_health != 0:
+        drt_status = 1
+    if drt_ath_health != 0:
+        drt_status = 1
+    if drt_jsn_health != 0 and drt_rds_health != 0 and drt_ath_health != 0:
         drt_status = 2
 
     dic_item = { 'name': "drt" , 'status': drt_status}
@@ -164,11 +180,30 @@ def lambda_avail_check():
     log.info("Obtained the Availability status of DRT")
 
     # bf api files
-    if (bf_api_parsed_health == 0 and bf_api_raw_health == 0):
+    ## Obtain APi pods availability first
+    obtain_api_pod_avail()
+    for pod in avail_api_pod_list:
+        if pod['name'] == 'gait_api':
+            api_gait_health = pod['status']
+        if pod['name'] == 'api-msk':
+            api_msk_health = pod['status']
+        if pod['name'] == 'gait_sgar':
+            api_sgar_health = pod['status']
+
+    ## Obtain api lambdas avial
+    if bf_api_parsed_health == 0 and bf_api_raw_health == 0 and api_gait_health == 0 and api_msk_health == 0 and api_sgar_health == 0:
         bf_api_status = 0
-    elif (bool(bf_api_parsed_health == 0) ^ bool(bf_api_raw_health == 0)):
+    if bf_api_parsed_health != 0:
         bf_api_status = 1
-    else:
+    if bf_api_raw_health != 0:
+        bf_api_status = 1
+    if api_gait_health != 0:
+        bf_api_status = 1
+    if api_msk_health != 0:
+        bf_api_status = 1
+    if api_sgar_health != 0:
+        bf_api_status = 1
+    if bf_api_parsed_health != 0 and bf_api_raw_health != 0 and api_gait_health != 0 and api_msk_health != 0 and api_sgar_health != 0:
         bf_api_status = 2
 
     dic_item = { 'name': "bf_api" , 'status': bf_api_status}
@@ -177,11 +212,17 @@ def lambda_avail_check():
 
     # bf scoring  files
     if (bf_xrs_ath_health == 0 and bf_rls_ath_health == 0 and bf_asr_ath_health == 0 and bf_as_ath_health == 0):
-        bf_scr_status =  0
-    elif ((bool(bf_xrs_ath_health == 0) ^ bool(bf_rls_ath_health == 0)) ^ (bool(bf_asr_ath_health == 0) ^ bool(bf_as_ath_health == 0))):
-        bf_scr_status =  1
-    else:
-        bf_scr_status =  2
+        bf_scr_status = 0
+    if bf_xrs_ath_health != 0:
+        bf_scr_status = 1
+    if bf_rls_ath_health != 0:
+        bf_scr_status = 1
+    if bf_asr_ath_health != 0:
+        bf_scr_status = 1
+    if bf_as_ath_health != 0:
+        bf_scr_status = 1
+    if bf_xrs_ath_health != 0 and bf_rls_ath_health != 0 and bf_asr_ath_health != 0 and bf_as_ath_health != 0:
+        bf_scr_status = 2
 
     dic_item = { 'name': "bf_scr" , 'status': bf_scr_status}
     avail_dic_list.append(dic_item)
