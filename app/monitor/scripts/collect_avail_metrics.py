@@ -45,8 +45,8 @@ lambda_func_list = [
     {"name": "bf_as_ath", "func_name": os.environ.get('BF_AS_ATH')}
     ]
 
-fms_cert = '/APP/fms-certs/fms_cert'
-fms_key = '/APP/fms-certs/fms_key'
+fms_cert = '/APP/auth-files/fms_cert'
+fms_key = '/APP/auth-files/fms_key'
 avail_dic_list = []
 lambda_list = []
 dic_item  = {}
@@ -67,13 +67,13 @@ def obtain_http_code(url_name, url, server):
             server_status = 200
         elif url_name == 'tab':
             http_status = requests.get(url).status_code
-            server_status = 200
-            # server_info = requests.get(url+"/admin/systeminfo.xml").text
-            # pattern = "<service status=\"Active\"/>"
-            # if pattern in server_info:
-            #     server_status = 200
-            # else:
-            #     server_status = 400
+            # server_status = 200
+            server_info = requests.get(url+"/admin/systeminfo.xml").text
+            pattern = "<service status=\"Active\"/>"
+            if pattern in server_info:
+                server_status = 200
+            else:
+                server_status = 400
         else:
             http_status = requests.get(url).status_code
             server_status = requests.get(server).status_code

@@ -28,6 +28,7 @@ pipeline:
       - NOTPROD_KUBE_SERVER
       - NOTPROD_FMS_KEY
       - NOTPROD_FMS_CERT
+      - NOTPROD_TAB_ADMIN_PWD
       - NOTPROD_AWS_ACCESS_KEY_ID
       - NOTPROD_AWS_SECRET_ACCESS_KEY
       - AWS_DEFAULT_REGION
@@ -35,6 +36,7 @@ pipeline:
     commands:
       - export FMS_KEY=$$NOTPROD_FMS_KEY
       - export FMS_CERT=$$NOTPROD_FMS_CERT
+      - export TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
       - export KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
       - export KUBE_SERVER=$$NOTPROD_KUBE_SERVER
       - export AWS_ACCESS_KEY_ID=$$NOTPROD_AWS_ACCESS_KEY_ID
@@ -62,6 +64,7 @@ pipeline:
       - PROD_KUBE_SERVER
       - PROD_FMS_KEY
       - PROD_FMS_CERT
+      - PROD_TAB_ADMIN_PWD
       - PROD_AWS_ACCESS_KEY_ID
       - PROD_AWS_SECRET_ACCESS_KEY
       - AWS_DEFAULT_REGION
@@ -69,6 +72,7 @@ pipeline:
     commands:
       - export FMS_KEY=$$PROD_FMS_KEY
       - export FMS_CERT=$$PROD_FMS_CERT
+      - export TAB_ADMIN_PWD=$$PROD_TAB_ADMIN_PWD
       - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
       - export KUBE_SERVER=$$PROD_KUBE_SERVER
       - export AWS_ACCESS_KEY_ID=$$PROD_AWS_ACCESS_KEY_ID
