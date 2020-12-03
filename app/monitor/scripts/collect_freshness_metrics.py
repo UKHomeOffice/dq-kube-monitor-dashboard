@@ -322,9 +322,6 @@ def obtain_inttab_fresh():
         api_version = os.environ.get('TAB_API_VERSION')
         auth_url = tab_url+"/api/"+api_version+"/auth/signin"
         headers = {'Content-Type': 'application/xml'}
-        # with open(auth_xml, 'r') as file:
-        #     userdata = file.read()
-
         req = requests.post(auth_url , data=userdata, headers=headers)
         root = et.fromstring(req.content)
         for child in root.iter('*'):
@@ -346,7 +343,7 @@ def obtain_inttab_fresh():
                  jobtype = child.attrib.get('jobType')
                  if jobstatus == "Success":
                      tab_data = 0
-                 elif jobstatus == "Running":
+                 elif jobstatus == "Running" or jobstatus == "InProgress":
                      tab_data = 1
                  elif jobstatus == "Failed":
                      tab_data = 2
