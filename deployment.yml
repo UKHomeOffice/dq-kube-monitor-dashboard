@@ -63,9 +63,18 @@ spec:
           - name: BF_API_RAW
             {{ if eq .ENV "notprod" }}value: 'cdlz-notprod-lambda'{{ end }}
             {{ if eq .ENV "prod" }}value: 'cdlz-prod-lambda'{{ end }}
-          - name: BF_SCH
+          - name: BF_SCH_CNS
             {{ if eq .ENV "notprod" }}value: 'consolidated-schedule-notprod-lambda-athena'{{ end }}
             {{ if eq .ENV "prod" }}value: 'consolidated-schedule-prod-lambda-athena'{{ end }}
+          - name: BF_SCH_ACL
+            {{ if eq .ENV "notprod" }}value: 'acl-input-notprod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'acl-input-prod-lambda-athena'{{ end }}
+          - name: BF_SCH_FS
+            {{ if eq .ENV "notprod" }}value: 'fs-input-notprod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'fs-input-prod-lambda-athena'{{ end }}
+          - name: BF_SCH_OAG
+            {{ if eq .ENV "notprod" }}value: 'oag-transform-notprod-lambda-athena'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'oag-transform-prod-lambda-athena'{{ end }}
           - name: BF_XRS_ATH
             {{ if eq .ENV "notprod" }}value: 'api-cross-record-scored-notprod-lambda-athena'{{ end }}
             {{ if eq .ENV "prod" }}value: 'api-cross-record-scored-prod-lambda-athena'{{ end }}
@@ -118,7 +127,7 @@ spec:
           - name: HOST
             value: '10.3.0.11'
           - name: PORT
-            value: '8081'
+            value: '8088'
         ports:
           - containerPort: 5000
       - name: opensslsidekick-fms
