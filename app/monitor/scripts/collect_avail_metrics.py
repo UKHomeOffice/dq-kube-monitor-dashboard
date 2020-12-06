@@ -59,6 +59,7 @@ avail_dic_list = []
 avail_api_pod_list = []
 lambda_list = []
 lam_list = []
+# rds_list = []
 dic_item  = {}
 lambda_item = {}
 
@@ -123,12 +124,12 @@ def obtain_lambda_avail(lambda_name,func_name):
     obtain the lambda functions State & if they are
     running without errors
     """
+    lam_list.clear()
     timenow = datetime.datetime.now()
     time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
     timenowconv = timenow.timestamp() * 1000.0
     time1minconv = time1min.timestamp() * 1000.0
     lambda_logs = boto3.client('logs',  region_name="eu-west-2")
-
     paginator = lambda_logs.get_paginator('filter_log_events')
     filter_1 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
                                             filterPattern='ERROR', startTime=int(time1minconv),
@@ -150,10 +151,10 @@ def obtain_lambda_avail(lambda_name,func_name):
         for i in page['events']:
             lam_list.append(i['message'])
 
-    if rds_list == []:
-        drt_rds_status = 2
+    if lam_list == []:
+        lambda_health = 0
     else:
-        drt_rds_status = 0
+        lambda_health = 2
 
     # filter_1 = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
     #                                         filterPattern='ERROR', startTime=int(time1minconv),
@@ -161,11 +162,11 @@ def obtain_lambda_avail(lambda_name,func_name):
     # filter_2 = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
     #                                         filterPattern='Fail', startTime=int(time1minconv),
     #                                         endTime=int(timenowconv))
-    message = filter['events']
-    if message == []:
-        lambda_health = 0
-    else:
-        lambda_health = 2
+    # message = filter['events']
+    # if message == []:
+    #     lambda_health = 0
+    # else:
+    #     lambda_health = 2
 
     # lambda_item = {lambda_name+'_health': lambda_health}
     lambda_item = { 'name': lambda_name , 'status': lambda_health}
