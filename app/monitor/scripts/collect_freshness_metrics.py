@@ -210,7 +210,7 @@ def obtain_gait_fresh():
 
 def obtain_drt_fresh():
     """
-    Query DRT pipline for fiels pusheed top datafeed and
+    Query DRT pipline for files pushed top datafeed and
     JSON files to DRT S3
     """
     try:

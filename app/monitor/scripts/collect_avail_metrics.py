@@ -32,9 +32,9 @@ service_list= [
     ]
 
 api_pod_list = [
-    {"name": "gait_api", "url": 'http://dq-gait-api-data-consumer:6066'},
-    {"name": "gait_sgar", "url": 'http://dq-gait-sgar-consumer:6066'},
-    {"name": "api-msk", "url": 'http://dq-api-msk-consumer:6066'}
+    {"name": "gait_api", "url": 'http://dq-gait-api-data-consumer:6066', "pod": "dq-gait-api-data-consumer"},
+    {"name": "gait_sgar", "url": 'http://dq-gait-sgar-consumer:6066', "pod": "dq-gait-sgar-consumer"},
+    {"name": "api-msk", "url": 'http://dq-api-msk-consumer:6066', "pod": "dq-api-msk-consumer"}
 ]
 
 lambda_func_list = [
@@ -63,7 +63,45 @@ lam_list = []
 dic_item  = {}
 lambda_item = {}
 
-#Setting log to STOUT
+
+# slack  message function
+def alert_to_slack(service, status_code, check_type):
+    """
+    Formats the text and posts to a specific Slack web app's URL
+    Returns:
+        Slack API repsonse
+    """
+    try:
+        url = os.environ.get('SLACK_URL')
+        message = service + "\nError Code: " + str(status_code)
+        if check_type is 'avail':
+            title = service + "is not reachable"
+        if check_type is 'fresh':
+            title = "There seems to be an issue with" +service+ "Data Freshness"
+        slack_data = {
+            "username": service + "Bot",
+            "icon_emoji": ":warning:",
+            "attachments": [
+                {
+                    "color": "#EE3333",
+                    "fields": [
+                        {
+                            "title": title,
+                            "value": message,
+                            "short": "false",
+                        }
+                    ]
+                }
+            ]
+        }
+        byte_length = str(sys.getsizeof(slack_data))
+        headers = {'Content-Type': "application/json", 'Content-Length': byte_length}
+        response = requests.post(url, data=json.dumps(slack_data), headers=headers)
+
+    except Exception as err:
+        print('The following error has occurred',err)
+
+# Setting log to STOUT
 def obtain_http_code(url_name, url, server):
     """
     Obtain the http status code of each services
@@ -90,11 +128,17 @@ def obtain_http_code(url_name, url, server):
             server_status = requests.get(server).status_code
 
         if (http_status == 200 and server_status == 200):
-        # if http_status == 200:
             status = 0
-        elif (bool(http_status == 200) ^ bool(server_status == 200)):
+        if http_status != 200:
             status = 1
-        else:
+            # alert_to_slack(url,http_status,'avail')
+        if server_status != 200:
+            status = 1
+            # if url_name is 'tab':
+            #     alert_to_slack('Internal Tableau',server_info,'avail')
+            # else:
+            #     alert_to_slack(server,server_status,'avail')
+        if (http_status != 200 and server_status != 200):
             status = 2
 
         dic_item = { 'name': url_name , 'status': status}
@@ -116,7 +160,8 @@ def obtain_api_pod_avail():
             status = 0
         else:
             status = 2
-        dic_item = { 'name': pod['name'] , 'status': status}
+            # alert_to_slack(pod['pod'],http_status,'avail')
+        dic_item = { 'name': pod['name'], 'status': status}
         avail_api_pod_list.append(dic_item)
 
 def obtain_lambda_avail(lambda_name,func_name):
