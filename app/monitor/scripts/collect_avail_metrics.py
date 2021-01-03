@@ -59,6 +59,7 @@ avail_dic_list = []
 avail_api_pod_list = []
 lambda_list = []
 lam_list = []
+lam_info_list = []
 # rds_list = []
 dic_item  = {}
 lambda_item = {}
