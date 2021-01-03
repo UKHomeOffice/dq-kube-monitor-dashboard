@@ -170,6 +170,7 @@ def obtain_lambda_avail(lambda_name,func_name):
     running without errors
     """
     lam_list.clear()
+    lam_info_list.clear()
     timenow = datetime.datetime.now()
     time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
     timenowconv = timenow.timestamp() * 1000.0
@@ -185,6 +186,9 @@ def obtain_lambda_avail(lambda_name,func_name):
     filter_3 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
                                             filterPattern='fail', startTime=int(time1minconv),
                                             endTime=int(timenowconv))
+    info_logs = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
+                                            filterPattern='INFO', startTime=int(time1minconv),
+                                            endTime=int(timenowconv))
 
     for page in filter_1:
         for i in page['events']:
@@ -195,25 +199,17 @@ def obtain_lambda_avail(lambda_name,func_name):
     for page in filter_3:
         for i in page['events']:
             lam_list.append(i['message'])
+    for page in info_logs:
+        for i in page['events']:
+            lam_info_list.append(i['message'])
 
-    if lam_list == []:
+    if lam_list == [] and lam_info_list != []:
         lambda_health = 0
-    else:
+    if lam_info_list == []: #This indicates the pipline was not active for X mins
+        lambda_health = 2
+    if if lam_list != []:
         lambda_health = 2
 
-    # filter_1 = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
-    #                                         filterPattern='ERROR', startTime=int(time1minconv),
-    #                                         endTime=int(timenowconv))
-    # filter_2 = lambda_logs.filter_log_events(logGroupName='/aws/lambda/'+func_name,
-    #                                         filterPattern='Fail', startTime=int(time1minconv),
-    #                                         endTime=int(timenowconv))
-    # message = filter['events']
-    # if message == []:
-    #     lambda_health = 0
-    # else:
-    #     lambda_health = 2
-
-    # lambda_item = {lambda_name+'_health': lambda_health}
     lambda_item = { 'name': lambda_name , 'status': lambda_health}
     lambda_list.append(lambda_item)
     log.info("Obtained the Availability status of "+lambda_name)
