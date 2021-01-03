@@ -174,8 +174,10 @@ def obtain_lambda_avail(lambda_name,func_name):
     lam_info_list.clear()
     timenow = datetime.datetime.now()
     time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
+    time30min = datetime.datetime.now() - datetime.timedelta(minutes=30)
     timenowconv = timenow.timestamp() * 1000.0
     time1minconv = time1min.timestamp() * 1000.0
+    time30minconv = time30min.timestamp() * 1000.0
     lambda_logs = boto3.client('logs',  region_name="eu-west-2")
     paginator = lambda_logs.get_paginator('filter_log_events')
     filter_1 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
@@ -188,7 +190,7 @@ def obtain_lambda_avail(lambda_name,func_name):
                                             filterPattern='fail', startTime=int(time1minconv),
                                             endTime=int(timenowconv))
     info_logs = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='INFO', startTime=int(time1minconv),
+                                            filterPattern='INFO', startTime=int(time30minconv),
                                             endTime=int(timenowconv))
 
     for page in filter_1:
