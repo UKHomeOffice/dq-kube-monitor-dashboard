@@ -208,7 +208,7 @@ def obtain_lambda_avail(lambda_name,func_name):
         lambda_health = 0
     if lam_info_list == []: #This indicates the pipline was not active for X mins
         lambda_health = 2
-    if if lam_list != []:
+    if lam_list != []:
         lambda_health = 2
 
     lambda_item = { 'name': lambda_name , 'status': lambda_health}
