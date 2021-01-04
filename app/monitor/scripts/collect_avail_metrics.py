@@ -38,19 +38,19 @@ api_pod_list = [
 ]
 
 lambda_func_list = [
-    {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP'), "log_intrv": "60"},
-    {"name": "drt_jsn", "func_name": os.environ.get('DRT_JSN_GRP'), "log_intrv": "360"},
-    {"name": "drt_rds", "func_name": os.environ.get('DRT_RDS_GRP'), "log_intrv": "360"},
-    {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS'), "log_intrv": "30"},
-    {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW'), "log_intrv": "30"},
-    {"name": "bf_sch_cns", "func_name": os.environ.get('BF_SCH_CNS'), "log_intrv": "60"},
-    {"name": "bf_sch_acl", "func_name": os.environ.get('BF_SCH_ACL'), "log_intrv": "1440"},
-    {"name": "bf_sch_fs", "func_name": os.environ.get('BF_SCH_FS'), "log_intrv": "1440"},
-    {"name": "bf_sch_oag", "func_name": os.environ.get('BF_SCH_OAG'), "log_intrv": "60"},
-    {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH'), "log_intrv": "60"},
-    {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH'), "log_intrv": "60"},
-    {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH'), "log_intrv": "1440"},
-    {"name": "bf_as_ath", "func_name": os.environ.get('BF_AS_ATH'), "log_intrv": "1440"}
+    {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP'), "log_intrv": 60},
+    {"name": "drt_jsn", "func_name": os.environ.get('DRT_JSN_GRP'), "log_intrv": 360},
+    {"name": "drt_rds", "func_name": os.environ.get('DRT_RDS_GRP'), "log_intrv": 360},
+    {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS'), "log_intrv": 30},
+    {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW'), "log_intrv": 30},
+    {"name": "bf_sch_cns", "func_name": os.environ.get('BF_SCH_CNS'), "log_intrv": 60},
+    {"name": "bf_sch_acl", "func_name": os.environ.get('BF_SCH_ACL'), "log_intrv": 1440},
+    {"name": "bf_sch_fs", "func_name": os.environ.get('BF_SCH_FS'), "log_intrv": 1440},
+    {"name": "bf_sch_oag", "func_name": os.environ.get('BF_SCH_OAG'), "log_intrv": 60},
+    {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH'), "log_intrv": 60},
+    {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH'), "log_intrv": 60},
+    {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH'), "log_intrv": 1440},
+    {"name": "bf_as_ath", "func_name": os.environ.get('BF_AS_ATH'), "log_intrv": 1440}
     ]
 
 fms_cert = '/APP/auth-files/fms_cert'
