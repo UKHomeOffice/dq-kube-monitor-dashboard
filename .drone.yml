@@ -34,6 +34,7 @@ pipeline:
       - AWS_DEFAULT_REGION
 
     commands:
+      - echo NOTPROD_TAB_ADMIN_PWD
       - export FMS_KEY=$$NOTPROD_FMS_KEY
       - export FMS_CERT=$$NOTPROD_FMS_CERT
       - export TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
@@ -86,7 +87,7 @@ pipeline:
 
     when:
       environment: production
-      branch: master
+      # branch: master
       event: deployment
 
   delete_prod:

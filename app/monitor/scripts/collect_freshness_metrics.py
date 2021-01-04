@@ -5,7 +5,7 @@ import boto3
 import psycopg2
 import datetime
 import requests
-import xml.etree.cElementTree as et
+import xml.etree.ElementTree as et
 # from botocore.config import Config
 #
 # CONFIG = Config(
@@ -210,7 +210,7 @@ def obtain_gait_fresh():
 
 def obtain_drt_fresh():
     """
-    Query DRT pipline for fiels pusheed top datafeed and
+    Query DRT pipline for files pushed top datafeed and
     JSON files to DRT S3
     """
     try:
@@ -337,7 +337,6 @@ def obtain_inttab_fresh():
         root_ref = et.fromstring(ref_req.content)
         for child in root_ref.iter('*'):
             if 'backgroundJob' in child.tag:
-                 count = count++1
                  jobid = child.attrib.get('id')
                  jobstatus = child.attrib.get('status')
                  jobtype = child.attrib.get('jobType')
