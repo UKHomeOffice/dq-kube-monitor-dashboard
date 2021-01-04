@@ -217,7 +217,7 @@ def obtain_lambda_avail(lambda_name,func_name,log_intrv):
 
 def lambda_avail_check():
     for lam in lambda_func_list:
-        obtain_lambda_avail(lam['name'],lam['func_name'])
+        obtain_lambda_avail(lam['name'],lam['func_name'],lam['log_intrv'])
 
     for lam in lambda_list:
         if lam['name'] == 'drt_ath':
