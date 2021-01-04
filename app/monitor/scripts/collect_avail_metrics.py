@@ -38,19 +38,19 @@ api_pod_list = [
 ]
 
 lambda_func_list = [
-    {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP')},
-    {"name": "drt_jsn", "func_name": os.environ.get('DRT_JSN_GRP')},
-    {"name": "drt_rds", "func_name": os.environ.get('DRT_RDS_GRP')},
-    {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS')},
-    {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW')},
-    {"name": "bf_sch_cns", "func_name": os.environ.get('BF_SCH_CNS')},
-    {"name": "bf_sch_acl", "func_name": os.environ.get('BF_SCH_ACL')},
-    {"name": "bf_sch_fs", "func_name": os.environ.get('BF_SCH_FS')},
-    {"name": "bf_sch_oag", "func_name": os.environ.get('BF_SCH_OAG')},
-    {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH')},
-    {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH')},
-    {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH')},
-    {"name": "bf_as_ath", "func_name": os.environ.get('BF_AS_ATH')}
+    {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP'), "log_intrv": "60"},
+    {"name": "drt_jsn", "func_name": os.environ.get('DRT_JSN_GRP'), "log_intrv": "360"},
+    {"name": "drt_rds", "func_name": os.environ.get('DRT_RDS_GRP'), "log_intrv": "360"},
+    {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS'), "log_intrv": "30"},
+    {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW'), "log_intrv": "30"},
+    {"name": "bf_sch_cns", "func_name": os.environ.get('BF_SCH_CNS'), "log_intrv": "60"},
+    {"name": "bf_sch_acl", "func_name": os.environ.get('BF_SCH_ACL'), "log_intrv": "1440"},
+    {"name": "bf_sch_fs", "func_name": os.environ.get('BF_SCH_FS'), "log_intrv": "1440"},
+    {"name": "bf_sch_oag", "func_name": os.environ.get('BF_SCH_OAG'), "log_intrv": "60"},
+    {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH'), "log_intrv": "60"},
+    {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH'), "log_intrv": "60"},
+    {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH'), "log_intrv": "1440"},
+    {"name": "bf_as_ath", "func_name": os.environ.get('BF_AS_ATH'), "log_intrv": "1440"}
     ]
 
 fms_cert = '/APP/auth-files/fms_cert'
@@ -165,7 +165,7 @@ def obtain_api_pod_avail():
         dic_item = { 'name': pod['name'], 'status': status}
         avail_api_pod_list.append(dic_item)
 
-def obtain_lambda_avail(lambda_name,func_name):
+def obtain_lambda_avail(lambda_name,func_name,log_intrv):
     """
     obtain the lambda functions State & if they are
     running without errors
@@ -173,24 +173,22 @@ def obtain_lambda_avail(lambda_name,func_name):
     lam_list.clear()
     lam_info_list.clear()
     timenow = datetime.datetime.now()
-    time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
-    time30min = datetime.datetime.now() - datetime.timedelta(minutes=30)
+    timemin = datetime.datetime.now() - datetime.timedelta(minutes=log_intrv)
     timenowconv = timenow.timestamp() * 1000.0
-    time1minconv = time1min.timestamp() * 1000.0
-    time30minconv = time30min.timestamp() * 1000.0
+    timeminconv = timemin.timestamp() * 1000.0
     lambda_logs = boto3.client('logs',  region_name="eu-west-2")
     paginator = lambda_logs.get_paginator('filter_log_events')
     filter_1 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='ERROR', startTime=int(time1minconv),
+                                            filterPattern='ERROR', startTime=int(timeminconv),
                                             endTime=int(timenowconv))
     filter_2 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='Fail', startTime=int(time1minconv),
+                                            filterPattern='Fail', startTime=int(timeminconv),
                                             endTime=int(timenowconv))
     filter_3 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='fail', startTime=int(time1minconv),
+                                            filterPattern='fail', startTime=int(timeminconv),
                                             endTime=int(timenowconv))
     info_logs = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='INFO', startTime=int(time30minconv),
+                                            filterPattern='INFO', startTime=int(timeminconv),
                                             endTime=int(timenowconv))
 
     for page in filter_1:
