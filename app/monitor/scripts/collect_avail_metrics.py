@@ -155,67 +155,79 @@ def obtain_http_code(url_name, url, server):
         print(e)
 
 def obtain_api_pod_avail():
-    for pod in api_pod_list:
-        http_status = requests.get(pod['url']).text
-        if 'OK' in http_status:
-            status = 0
-        else:
-            status = 2
-            # alert_to_slack(pod['pod'],http_status,'avail')
-        dic_item = { 'name': pod['name'], 'status': status}
+    try:
+        for pod in api_pod_list:
+            http_status = requests.get(pod['url']).text
+            if 'OK' in http_status:
+                status = 0
+            else:
+                status = 2
+                # alert_to_slack(pod['pod'],http_status,'avail')
+            dic_item = { 'name': pod['name'], 'status': status}
+            avail_api_pod_list.append(dic_item)
+
+    except Exception as err:
+        dic_item = { 'name': pod['name'] , 'status': 2}
         avail_api_pod_list.append(dic_item)
+        print(err)
 
 def obtain_lambda_avail(lambda_name,func_name,log_intrv):
     """
     obtain the lambda functions State & if they are
     running without errors
     """
-    lam_list.clear()
-    lam_info_list.clear()
-    timenow = datetime.datetime.now()
-    timemin = datetime.datetime.now() - datetime.timedelta(minutes=log_intrv)
-    time10min = datetime.datetime.now() - datetime.timedelta(minutes=10)
-    timenowconv = timenow.timestamp() * 1000.0
-    timeminconv = timemin.timestamp() * 1000.0
-    time10minconv = time10min.timestamp() * 1000.0
-    lambda_logs = boto3.client('logs',  region_name="eu-west-2")
-    paginator = lambda_logs.get_paginator('filter_log_events')
-    filter_1 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='ERROR', startTime=int(time10minconv),
-                                            endTime=int(timenowconv))
-    filter_2 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='Fail', startTime=int(time10minconv),
-                                            endTime=int(timenowconv))
-    filter_3 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='fail', startTime=int(time10minconv),
-                                            endTime=int(timenowconv))
-    info_logs = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='INFO', startTime=int(timeminconv),
-                                            endTime=int(timenowconv))
+    try:
+        lam_list.clear()
+        lam_info_list.clear()
+        timenow = datetime.datetime.now()
+        timemin = datetime.datetime.now() - datetime.timedelta(minutes=log_intrv)
+        time10min = datetime.datetime.now() - datetime.timedelta(minutes=10)
+        timenowconv = timenow.timestamp() * 1000.0
+        timeminconv = timemin.timestamp() * 1000.0
+        time10minconv = time10min.timestamp() * 1000.0
+        lambda_logs = boto3.client('logs',  region_name="eu-west-2")
+        paginator = lambda_logs.get_paginator('filter_log_events')
+        filter_1 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
+                                                filterPattern='ERROR', startTime=int(time10minconv),
+                                                endTime=int(timenowconv))
+        filter_2 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
+                                                filterPattern='Fail', startTime=int(time10minconv),
+                                                endTime=int(timenowconv))
+        filter_3 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
+                                                filterPattern='fail', startTime=int(time10minconv),
+                                                endTime=int(timenowconv))
+        info_logs = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
+                                                filterPattern='INFO', startTime=int(timeminconv),
+                                                endTime=int(timenowconv))
 
-    for page in filter_1:
-        for i in page['events']:
-            lam_list.append(i['message'])
-    for page in filter_2:
-        for i in page['events']:
-            lam_list.append(i['message'])
-    for page in filter_3:
-        for i in page['events']:
-            lam_list.append(i['message'])
-    for page in info_logs:
-        for i in page['events']:
-            lam_info_list.append(i['message'])
+        for page in filter_1:
+            for i in page['events']:
+                lam_list.append(i['message'])
+        for page in filter_2:
+            for i in page['events']:
+                lam_list.append(i['message'])
+        for page in filter_3:
+            for i in page['events']:
+                lam_list.append(i['message'])
+        for page in info_logs:
+            for i in page['events']:
+                lam_info_list.append(i['message'])
 
-    if lam_list == [] and lam_info_list != []:
-        lambda_health = 0
-    if lam_info_list == []: #This indicates the pipline was not active for X mins
-        lambda_health = 2
-    if lam_list != []:
-        lambda_health = 2
+        if lam_list == [] and lam_info_list != []:
+            lambda_health = 0
+        if lam_info_list == []: #This indicates the pipline was not active for X mins
+            lambda_health = 2
+        if lam_list != []:
+            lambda_health = 2
 
-    lambda_item = { 'name': lambda_name , 'status': lambda_health}
-    lambda_list.append(lambda_item)
-    log.info("Obtained the Availability status of "+lambda_name)
+        lambda_item = { 'name': lambda_name , 'status': lambda_health}
+        lambda_list.append(lambda_item)
+        log.info("Obtained the Availability status of "+lambda_name)
+
+    except Exception as err:
+        lambda_item = { 'name': lambda_name , 'status': 2}
+        lambda_list.append(lambda_item)
+        print(err)
 
 def lambda_avail_check():
     for lam in lambda_func_list:
