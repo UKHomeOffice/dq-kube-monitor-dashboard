@@ -89,7 +89,7 @@ spec:
             {{ if eq .ENV "prod" }}value: 'api-accuracy-scoring-prod-lambda-athena'{{ end }}
           - name: SLACK_URL
             {{ if eq .ENV "notprod" }}value: 'notprod_slack'{{ end }}
-            {{ if eq .ENV "prod" }}value: 'https://hooks.slack.com/services/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'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'https://hooks.slack.com/services/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'{{ end }}
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
@@ -130,7 +130,7 @@ spec:
           - name: HOST
             value: '10.3.0.12'
           - name: PORT
-            value: '8088'
+            value: '8081'
         ports:
           - containerPort: 5000
       - name: opensslsidekick-fms

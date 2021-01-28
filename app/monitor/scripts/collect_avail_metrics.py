@@ -38,19 +38,19 @@ api_pod_list = [
 ]
 
 lambda_func_list = [
-    {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP')},
-    {"name": "drt_jsn", "func_name": os.environ.get('DRT_JSN_GRP')},
-    {"name": "drt_rds", "func_name": os.environ.get('DRT_RDS_GRP')},
-    {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS')},
-    {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW')},
-    {"name": "bf_sch_cns", "func_name": os.environ.get('BF_SCH_CNS')},
-    {"name": "bf_sch_acl", "func_name": os.environ.get('BF_SCH_ACL')},
-    {"name": "bf_sch_fs", "func_name": os.environ.get('BF_SCH_FS')},
-    {"name": "bf_sch_oag", "func_name": os.environ.get('BF_SCH_OAG')},
-    {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH')},
-    {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH')},
-    {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH')},
-    {"name": "bf_as_ath", "func_name": os.environ.get('BF_AS_ATH')}
+    {"name": "drt_ath", "func_name": os.environ.get('DRT_ATH_GRP'), "log_intrv": 60},
+    {"name": "drt_jsn", "func_name": os.environ.get('DRT_JSN_GRP'), "log_intrv": 360},
+    {"name": "drt_rds", "func_name": os.environ.get('DRT_RDS_GRP'), "log_intrv": 360},
+    {"name": "bf_api_parsed", "func_name": os.environ.get('BF_API_PRS'), "log_intrv": 30},
+    {"name": "bf_api_raw", "func_name": os.environ.get('BF_API_RAW'), "log_intrv": 30},
+    {"name": "bf_sch_cns", "func_name": os.environ.get('BF_SCH_CNS'), "log_intrv": 60},
+    {"name": "bf_sch_acl", "func_name": os.environ.get('BF_SCH_ACL'), "log_intrv": 1440},
+    {"name": "bf_sch_fs", "func_name": os.environ.get('BF_SCH_FS'), "log_intrv": 1440},
+    {"name": "bf_sch_oag", "func_name": os.environ.get('BF_SCH_OAG'), "log_intrv": 60},
+    {"name": "bf_xrs_ath", "func_name": os.environ.get('BF_XRS_ATH'), "log_intrv": 60},
+    {"name": "bf_rls_ath", "func_name": os.environ.get('BF_RLS_ATH'), "log_intrv": 60},
+    {"name": "bf_asr_ath", "func_name": os.environ.get('BF_ASR_ATH'), "log_intrv": 1440},
+    {"name": "bf_as_ath", "func_name": os.environ.get('BF_AS_ATH'), "log_intrv": 1440}
     ]
 
 fms_cert = '/APP/auth-files/fms_cert'
@@ -155,71 +155,83 @@ def obtain_http_code(url_name, url, server):
         print(e)
 
 def obtain_api_pod_avail():
-    for pod in api_pod_list:
-        http_status = requests.get(pod['url']).text
-        if 'OK' in http_status:
-            status = 0
-        else:
-            status = 2
-            # alert_to_slack(pod['pod'],http_status,'avail')
-        dic_item = { 'name': pod['name'], 'status': status}
-        avail_api_pod_list.append(dic_item)
+    try:
+        for pod in api_pod_list:
+            http_status = requests.get(pod['url']).text
+            if 'OK' in http_status:
+                status = 0
+            else:
+                status = 2
+                # alert_to_slack(pod['pod'],http_status,'avail')
+            dic_item = { 'name': pod['name'], 'status': status}
+            avail_api_pod_list.append(dic_item)
 
-def obtain_lambda_avail(lambda_name,func_name):
+    except Exception as err:
+        dic_item = { 'name': pod['name'] , 'status': 2}
+        avail_api_pod_list.append(dic_item)
+        print(err)
+
+def obtain_lambda_avail(lambda_name,func_name,log_intrv):
     """
     obtain the lambda functions State & if they are
     running without errors
     """
-    lam_list.clear()
-    lam_info_list.clear()
-    timenow = datetime.datetime.now()
-    time1min = datetime.datetime.now() - datetime.timedelta(minutes=1)
-    time30min = datetime.datetime.now() - datetime.timedelta(minutes=30)
-    timenowconv = timenow.timestamp() * 1000.0
-    time1minconv = time1min.timestamp() * 1000.0
-    time30minconv = time30min.timestamp() * 1000.0
-    lambda_logs = boto3.client('logs',  region_name="eu-west-2")
-    paginator = lambda_logs.get_paginator('filter_log_events')
-    filter_1 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='ERROR', startTime=int(time1minconv),
-                                            endTime=int(timenowconv))
-    filter_2 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='Fail', startTime=int(time1minconv),
-                                            endTime=int(timenowconv))
-    filter_3 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='fail', startTime=int(time1minconv),
-                                            endTime=int(timenowconv))
-    info_logs = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
-                                            filterPattern='INFO', startTime=int(time30minconv),
-                                            endTime=int(timenowconv))
+    try:
+        lam_list.clear()
+        lam_info_list.clear()
+        timenow = datetime.datetime.now()
+        timemin = datetime.datetime.now() - datetime.timedelta(minutes=log_intrv)
+        time10min = datetime.datetime.now() - datetime.timedelta(minutes=10)
+        timenowconv = timenow.timestamp() * 1000.0
+        timeminconv = timemin.timestamp() * 1000.0
+        time10minconv = time10min.timestamp() * 1000.0
+        lambda_logs = boto3.client('logs',  region_name="eu-west-2")
+        paginator = lambda_logs.get_paginator('filter_log_events')
+        filter_1 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
+                                                filterPattern='ERROR', startTime=int(time10minconv),
+                                                endTime=int(timenowconv))
+        filter_2 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
+                                                filterPattern='Fail', startTime=int(time10minconv),
+                                                endTime=int(timenowconv))
+        filter_3 = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
+                                                filterPattern='fail', startTime=int(time10minconv),
+                                                endTime=int(timenowconv))
+        info_logs = paginator.paginate(logGroupName='/aws/lambda/'+func_name,
+                                                filterPattern='INFO', startTime=int(timeminconv),
+                                                endTime=int(timenowconv))
 
-    for page in filter_1:
-        for i in page['events']:
-            lam_list.append(i['message'])
-    for page in filter_2:
-        for i in page['events']:
-            lam_list.append(i['message'])
-    for page in filter_3:
-        for i in page['events']:
-            lam_list.append(i['message'])
-    for page in info_logs:
-        for i in page['events']:
-            lam_info_list.append(i['message'])
+        for page in filter_1:
+            for i in page['events']:
+                lam_list.append(i['message'])
+        for page in filter_2:
+            for i in page['events']:
+                lam_list.append(i['message'])
+        for page in filter_3:
+            for i in page['events']:
+                lam_list.append(i['message'])
+        for page in info_logs:
+            for i in page['events']:
+                lam_info_list.append(i['message'])
 
-    if lam_list == [] and lam_info_list != []:
-        lambda_health = 0
-    if lam_info_list == []: #This indicates the pipline was not active for X mins
-        lambda_health = 2
-    if lam_list != []:
-        lambda_health = 2
+        if lam_list == [] and lam_info_list != []:
+            lambda_health = 0
+        if lam_info_list == []: #This indicates the pipline was not active for X mins
+            lambda_health = 2
+        if lam_list != []:
+            lambda_health = 2
 
-    lambda_item = { 'name': lambda_name , 'status': lambda_health}
-    lambda_list.append(lambda_item)
-    log.info("Obtained the Availability status of "+lambda_name)
+        lambda_item = { 'name': lambda_name , 'status': lambda_health}
+        lambda_list.append(lambda_item)
+        log.info("Obtained the Availability status of "+lambda_name)
+
+    except Exception as err:
+        lambda_item = { 'name': lambda_name , 'status': 2}
+        lambda_list.append(lambda_item)
+        print(err)
 
 def lambda_avail_check():
     for lam in lambda_func_list:
-        obtain_lambda_avail(lam['name'],lam['func_name'])
+        obtain_lambda_avail(lam['name'],lam['func_name'],lam['log_intrv'])
 
     for lam in lambda_list:
         if lam['name'] == 'drt_ath':
