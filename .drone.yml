@@ -15,52 +15,52 @@ pipeline:
   #   when:
   #     event: push
 
-  Print Secrets:
-    image: quay.io/ukhomeofficedigital/kd
-    environment:
-      - ENV=notprod
-      - KUBE_NAMESPACE=dq-apps-notprod
-      - INSECURE_SKIP_TLS_VERIFY=true
-      - VOLUME_SIZE=10Gi
-
-    secrets:
-      - NOTPROD_KUBE_TOKEN
-      - NOTPROD_KUBE_SERVER
-      - NOTPROD_FMS_KEY
-      - NOTPROD_FMS_CERT
-      - NOTPROD_TAB_ADMIN_PWD
-      - NOTPROD_AWS_ACCESS_KEY_ID
-      - NOTPROD_AWS_SECRET_ACCESS_KEY
-      - AWS_DEFAULT_REGION
-      - PROD_KUBE_TOKEN
-      - PROD_KUBE_SERVER
-      - PROD_FMS_KEY
-      - PROD_FMS_CERT
-      - PROD_TAB_ADMIN_PWD
-      - PROD_AWS_ACCESS_KEY_ID
-      - PROD_AWS_SECRET_ACCESS_KEY
-      - PROD_SLACK_URL
-
-    commands:
-      - echo NOTPROD_TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
-      - echo NOTPROD_KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
-      - echo NOTPROD_KUBE_SERVER=$$NOTPROD_KUBE_SERVER
-      - echo NOTPROD_FMS_KEY=$$NOTPROD_FMS_KEY
-      - echo NOTPROD_FMS_CERT=$$NOTPROD_FMS_CERT
-      - echo NOTPROD_AWS_ACCESS_KEY_ID=$$NOTPROD_AWS_ACCESS_KEY_ID
-      - echo NOTPROD_AWS_SECRET_ACCESS_KEY=$$NOTPROD_AWS_SECRET_ACCESS_KEY
-      - echo AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
-      - echo PROD_KUBE_TOKEN=$$PROD_KUBE_TOKEN
-      - echo PROD_KUBE_SERVER=$$PROD_KUBE_SERVER
-      - echo PROD_FMS_KEY=$$PROD_FMS_KEY
-      - echo PROD_FMS_CERT=$$PROD_FMS_CERT
-      - echo PROD_TAB_ADMIN_PWD=$$PROD_TAB_ADMIN_PWD
-      - echo PROD_AWS_ACCESS_KEY_ID=$$PROD_AWS_ACCESS_KEY_ID
-      - echo PROD_AWS_SECRET_ACCESS_KEY=$$PROD_AWS_SECRET_ACCESS_KEY
-      - echo PROD_SLACK_URL=$$PROD_SLACK_URL
-
-    when:
-        event: push
+  # Print Secrets:
+  #   image: quay.io/ukhomeofficedigital/kd
+  #   environment:
+  #     - ENV=notprod
+  #     - KUBE_NAMESPACE=dq-apps-notprod
+  #     - INSECURE_SKIP_TLS_VERIFY=true
+  #     - VOLUME_SIZE=10Gi
+  #
+  #   secrets:
+  #     - NOTPROD_KUBE_TOKEN
+  #     - NOTPROD_KUBE_SERVER
+  #     - NOTPROD_FMS_KEY
+  #     - NOTPROD_FMS_CERT
+  #     - NOTPROD_TAB_ADMIN_PWD
+  #     - NOTPROD_AWS_ACCESS_KEY_ID
+  #     - NOTPROD_AWS_SECRET_ACCESS_KEY
+  #     - AWS_DEFAULT_REGION
+  #     - PROD_KUBE_TOKEN
+  #     - PROD_KUBE_SERVER
+  #     - PROD_FMS_KEY
+  #     - PROD_FMS_CERT
+  #     - PROD_TAB_ADMIN_PWD
+  #     - PROD_AWS_ACCESS_KEY_ID
+  #     - PROD_AWS_SECRET_ACCESS_KEY
+  #     - PROD_SLACK_URL
+  #
+  #   commands:
+  #     - echo NOTPROD_TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
+  #     - echo NOTPROD_KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
+  #     - echo NOTPROD_KUBE_SERVER=$$NOTPROD_KUBE_SERVER
+  #     - echo NOTPROD_FMS_KEY=$$NOTPROD_FMS_KEY
+  #     - echo NOTPROD_FMS_CERT=$$NOTPROD_FMS_CERT
+  #     - echo NOTPROD_AWS_ACCESS_KEY_ID=$$NOTPROD_AWS_ACCESS_KEY_ID
+  #     - echo NOTPROD_AWS_SECRET_ACCESS_KEY=$$NOTPROD_AWS_SECRET_ACCESS_KEY
+  #     - echo AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
+  #     - echo PROD_KUBE_TOKEN=$$PROD_KUBE_TOKEN
+  #     - echo PROD_KUBE_SERVER=$$PROD_KUBE_SERVER
+  #     - echo PROD_FMS_KEY=$$PROD_FMS_KEY
+  #     - echo PROD_FMS_CERT=$$PROD_FMS_CERT
+  #     - echo PROD_TAB_ADMIN_PWD=$$PROD_TAB_ADMIN_PWD
+  #     - echo PROD_AWS_ACCESS_KEY_ID=$$PROD_AWS_ACCESS_KEY_ID
+  #     - echo PROD_AWS_SECRET_ACCESS_KEY=$$PROD_AWS_SECRET_ACCESS_KEY
+  #     - echo PROD_SLACK_URL=$$PROD_SLACK_URL
+  #
+  #   when:
+  #       event: push
 
   # deploy_to_notprod:
   #   image: quay.io/ukhomeofficedigital/kd
