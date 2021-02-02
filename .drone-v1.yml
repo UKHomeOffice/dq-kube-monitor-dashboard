@@ -10,7 +10,7 @@ platform:
 steps:
 - name: build_monitor_image
   pull: if-not-exists
-  image: ukhomeoffice/drone-docker
+  image: plugins/docker
   settings:
     dockerfile: app/monitor/Dockerfile
     force_tag: true
@@ -28,6 +28,7 @@ steps:
   when:
     event:
     - push
+
 
 - name: deploy_to_notprod
   pull: if-not-exists
