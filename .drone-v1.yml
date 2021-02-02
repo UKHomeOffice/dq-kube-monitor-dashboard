@@ -66,6 +66,8 @@ steps:
       from_secret: NOTPROD_KUBE_TOKEN
     NOTPROD_TAB_ADMIN_PWD:
       from_secret: NOTPROD_TAB_ADMIN_PWD
+    PROD_SLACK_URL:
+      from_secret: PROD_SLACK_URL
     VOLUME_SIZE: 10Gi
   when:
     event:
