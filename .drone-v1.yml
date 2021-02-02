@@ -87,7 +87,7 @@ steps:
   - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
   - export SLACK_URL=$$PROD_SLACK_URL
   - kd --delete --file deployment.yml
-  - "kd -f pvc.yml -f service.yml \\\n-f secrets.yml -f aws_secrets.yml \\\n-f network-policy.yml -f deployment.yml\n"
+  - kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml -f network-policy.yml -f deployment.yml
   environment:
     AWS_DEFAULT_REGION:
       from_secret: AWS_DEFAULT_REGION
@@ -110,6 +110,8 @@ steps:
       from_secret: PROD_SLACK_URL
     PROD_TAB_ADMIN_PWD:
       from_secret: PROD_TAB_ADMIN_PWD
+    PROD_SLACK_URL:
+      from_secret: PROD_SLACK_URL
     VOLUME_SIZE: 10Gi
   when:
     event:
