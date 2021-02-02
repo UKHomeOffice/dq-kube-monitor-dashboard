@@ -1,114 +1,167 @@
 
 
 pipeline:
-  build_monitor_image:
-    image: ukhomeoffice/drone-docker
-    repo: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard
-    secrets: [ docker_username, docker_password ]
-    registry: quay.io
-    dockerfile: app/monitor/Dockerfile
-    force_tag: true
-    tags:
-      - latest
-      - ${DRONE_COMMIT_SHA}
-      - b${DRONE_BUILD_NUMBER}
-    when:
-      event: push
+#   build_monitor_image:
+#     image: ukhomeoffice/drone-docker
+#     repo: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard
+#     secrets: [ docker_username, docker_password ]
+#     registry: quay.io
+#     dockerfile: app/monitor/Dockerfile
+#     force_tag: true
+#     tags:
+#       - latest
+#       - ${DRONE_COMMIT_SHA}
+#       - b${DRONE_BUILD_NUMBER}
+#     when:
+#       event: push
+#
+  # Print Secrets:
+  #   image: quay.io/ukhomeofficedigital/kd
+  #   environment:
+  #     - ENV=notprod
+  #     - KUBE_NAMESPACE=dq-apps-notprod
+  #     - INSECURE_SKIP_TLS_VERIFY=true
+  #     - VOLUME_SIZE=10Gi
+  #
+  #   secrets:
+  #     - DOCKER_USERNAME
+  #     - DOCKER_PASSWORD
+  #     - NOTPROD_KUBE_TOKEN
+  #     - NOTPROD_KUBE_SERVER
+  #     - NOTPROD_FMS_KEY
+  #     - NOTPROD_FMS_CERT
+  #     - NOTPROD_TAB_ADMIN_PWD
+  #     - NOTPROD_AWS_ACCESS_KEY_ID
+  #     - NOTPROD_AWS_SECRET_ACCESS_KEY
+  #     - AWS_DEFAULT_REGION
+  #     - PROD_KUBE_TOKEN
+  #     - PROD_KUBE_SERVER
+  #     - PROD_FMS_KEY
+  #     - PROD_FMS_CERT
+  #     - PROD_TAB_ADMIN_PWD
+  #     - PROD_AWS_ACCESS_KEY_ID
+  #     - PROD_AWS_SECRET_ACCESS_KEY
+  #     - PROD_SLACK_URL
+  #
+  #   commands:
+  #     - echo DOCKER_USERNAME=$$DOCKER_USERNAME
+  #     - echo DOCKER_PASSWORD=$$DOCKER_PASSWORD
+  #     - echo NOTPROD_TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
+  #     - echo NOTPROD_KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
+  #     - echo NOTPROD_KUBE_SERVER=$$NOTPROD_KUBE_SERVER
+  #     - echo NOTPROD_FMS_KEY=$$NOTPROD_FMS_KEY
+  #     - echo NOTPROD_FMS_CERT=$$NOTPROD_FMS_CERT
+  #     - echo NOTPROD_AWS_ACCESS_KEY_ID=$$NOTPROD_AWS_ACCESS_KEY_ID
+  #     - echo NOTPROD_AWS_SECRET_ACCESS_KEY=$$NOTPROD_AWS_SECRET_ACCESS_KEY
+  #     - echo AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
+  #     - echo PROD_KUBE_TOKEN=$$PROD_KUBE_TOKEN
+  #     - echo PROD_KUBE_SERVER=$$PROD_KUBE_SERVER
+  #     - echo PROD_FMS_KEY=$$PROD_FMS_KEY
+  #     - echo PROD_FMS_CERT=$$PROD_FMS_CERT
+  #     - echo PROD_TAB_ADMIN_PWD=$$PROD_TAB_ADMIN_PWD
+  #     - echo PROD_AWS_ACCESS_KEY_ID=$$PROD_AWS_ACCESS_KEY_ID
+  #     - echo PROD_AWS_SECRET_ACCESS_KEY=$$PROD_AWS_SECRET_ACCESS_KEY
+  #     - echo PROD_SLACK_URL=$$PROD_SLACK_URL
+  #
+  #   when:
+  #       event: push
 
-  deploy_to_notprod:
-    image: quay.io/ukhomeofficedigital/kd
-    environment:
-      - ENV=notprod
-      - KUBE_NAMESPACE=dq-apps-notprod
-      - INSECURE_SKIP_TLS_VERIFY=true
-      - VOLUME_SIZE=10Gi
-
-    secrets:
-      - NOTPROD_KUBE_TOKEN
-      - NOTPROD_KUBE_SERVER
-      - NOTPROD_FMS_KEY
-      - NOTPROD_FMS_CERT
-      - NOTPROD_TAB_ADMIN_PWD
-      - NOTPROD_AWS_ACCESS_KEY_ID
-      - NOTPROD_AWS_SECRET_ACCESS_KEY
-      - AWS_DEFAULT_REGION
-
-    commands:
-      - echo NOTPROD_TAB_ADMIN_PWD
-      - export FMS_KEY=$$NOTPROD_FMS_KEY
-      - export FMS_CERT=$$NOTPROD_FMS_CERT
-      - export TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
-      - export KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
-      - export KUBE_SERVER=$$NOTPROD_KUBE_SERVER
-      - export AWS_ACCESS_KEY_ID=$$NOTPROD_AWS_ACCESS_KEY_ID
-      - export AWS_SECRET_ACCESS_KEY=$$NOTPROD_AWS_SECRET_ACCESS_KEY
-      - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
-      - kd --delete --file deployment.yml
-      - |
-        kd -f pvc.yml -f service.yml \
-        -f secrets.yml -f aws_secrets.yml \
-        -f network-policy.yml -f deployment.yml
-
-    when:
-      event: push
-
-  deploy_to_prod:
-    image: quay.io/ukhomeofficedigital/kd
-    environment:
-      - ENV=prod
-      - KUBE_NAMESPACE=dq-apps
-      - INSECURE_SKIP_TLS_VERIFY=true
-      - VOLUME_SIZE=10Gi
-
-    secrets:
-      - PROD_KUBE_TOKEN
-      - PROD_KUBE_SERVER
-      - PROD_FMS_KEY
-      - PROD_FMS_CERT
-      - PROD_TAB_ADMIN_PWD
-      - PROD_AWS_ACCESS_KEY_ID
-      - PROD_AWS_SECRET_ACCESS_KEY
-      - AWS_DEFAULT_REGION
-
-    commands:
-      - export FMS_KEY=$$PROD_FMS_KEY
-      - export FMS_CERT=$$PROD_FMS_CERT
-      - export TAB_ADMIN_PWD=$$PROD_TAB_ADMIN_PWD
-      - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
-      - export KUBE_SERVER=$$PROD_KUBE_SERVER
-      - export AWS_ACCESS_KEY_ID=$$PROD_AWS_ACCESS_KEY_ID
-      - export AWS_SECRET_ACCESS_KEY=$$PROD_AWS_SECRET_ACCESS_KEY
-      - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
-      - kd --delete --file deployment.yml
-      - |
-        kd -f pvc.yml -f service.yml \
-        -f secrets.yml -f aws_secrets.yml \
-        -f network-policy.yml -f deployment.yml
-
-    when:
-      environment: production
-      # branch: master
-      event: deployment
-
-  delete_prod:
-    image: quay.io/ukhomeofficedigital/kd
-    environment:
-      - ENV=prod
-      - KUBE_NAMESPACE=dq-apps
-      - INSECURE_SKIP_TLS_VERIFY=true
-      - VOLUME_SIZE=10Gi
-
-    secrets:
-      - PROD_KUBE_TOKEN
-      - PROD_KUBE_SERVER
-
-    commands:
-      - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
-      - export KUBE_SERVER=$$PROD_KUBE_SERVER
-      - |
-        kd --delete --file deployment.yml --file pvc.yml
-
-    when:
-      environment: delete
-      branch: master
-      event: deployment
+  # deploy_to_notprod:
+  #   image: quay.io/ukhomeofficedigital/kd
+  #   environment:
+  #     - ENV=notprod
+  #     - KUBE_NAMESPACE=dq-apps-notprod
+  #     - INSECURE_SKIP_TLS_VERIFY=true
+  #     - VOLUME_SIZE=10Gi
+  #
+  #   secrets:
+  #     - NOTPROD_KUBE_TOKEN
+  #     - NOTPROD_KUBE_SERVER
+  #     - NOTPROD_FMS_KEY
+  #     - NOTPROD_FMS_CERT
+  #     - NOTPROD_TAB_ADMIN_PWD
+  #     - NOTPROD_AWS_ACCESS_KEY_ID
+  #     - NOTPROD_AWS_SECRET_ACCESS_KEY
+  #     - AWS_DEFAULT_REGION
+  #
+  #   commands:
+  #     - echo NOTPROD_TAB_ADMIN_PWD
+  #     - export FMS_KEY=$$NOTPROD_FMS_KEY
+  #     - export FMS_CERT=$$NOTPROD_FMS_CERT
+  #     - export TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
+  #     - export KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
+  #     - export KUBE_SERVER=$$NOTPROD_KUBE_SERVER
+  #     - export AWS_ACCESS_KEY_ID=$$NOTPROD_AWS_ACCESS_KEY_ID
+  #     - export AWS_SECRET_ACCESS_KEY=$$NOTPROD_AWS_SECRET_ACCESS_KEY
+  #     - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
+  #     - kd --delete --file deployment.yml
+  #     - |
+  #       kd -f pvc.yml -f service.yml \
+  #       -f secrets.yml -f aws_secrets.yml \
+  #       -f network-policy.yml -f deployment.yml
+  #
+  #   when:
+  #     event: push
+  #
+  # deploy_to_prod:
+  #   image: quay.io/ukhomeofficedigital/kd
+  #   environment:
+  #     - ENV=prod
+  #     - KUBE_NAMESPACE=dq-apps
+  #     - INSECURE_SKIP_TLS_VERIFY=true
+  #     - VOLUME_SIZE=10Gi
+  #
+  #   secrets:
+  #     - PROD_KUBE_TOKEN
+  #     - PROD_KUBE_SERVER
+  #     - PROD_FMS_KEY
+  #     - PROD_FMS_CERT
+  #     - PROD_TAB_ADMIN_PWD
+  #     - PROD_AWS_ACCESS_KEY_ID
+  #     - PROD_AWS_SECRET_ACCESS_KEY
+  #     - PROD_SLACK_URL
+  #     - AWS_DEFAULT_REGION
+  #
+  #   commands:
+  #     - export FMS_KEY=$$PROD_FMS_KEY
+  #     - export FMS_CERT=$$PROD_FMS_CERT
+  #     - export TAB_ADMIN_PWD=$$PROD_TAB_ADMIN_PWD
+  #     - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
+  #     - export KUBE_SERVER=$$PROD_KUBE_SERVER
+  #     - export AWS_ACCESS_KEY_ID=$$PROD_AWS_ACCESS_KEY_ID
+  #     - export AWS_SECRET_ACCESS_KEY=$$PROD_AWS_SECRET_ACCESS_KEY
+  #     - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
+  #     - export SLACK_URL=$$PROD_SLACK_URL
+  #     - kd --delete --file deployment.yml
+  #     - |
+  #       kd -f pvc.yml -f service.yml \
+  #       -f secrets.yml -f aws_secrets.yml \
+  #       -f network-policy.yml -f deployment.yml
+  #
+  #   when:
+  #     environment: production
+  #     #branch: master
+  #     event: deployment
+  #
+  # delete_prod:
+  #   image: quay.io/ukhomeofficedigital/kd
+  #   environment:
+  #     - ENV=prod
+  #     - KUBE_NAMESPACE=dq-apps
+  #     - INSECURE_SKIP_TLS_VERIFY=true
+  #     - VOLUME_SIZE=10Gi
+  #
+  #   secrets:
+  #     - PROD_KUBE_TOKEN
+  #     - PROD_KUBE_SERVER
+  #
+  #   commands:
+  #     - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
+  #     - export KUBE_SERVER=$$PROD_KUBE_SERVER
+  #     - |
+  #       kd --delete --file deployment.yml --file pvc.yml
+  #
+  #   when:
+  #     environment: delete
+  #     branch: master
+  #     event: deployment
