@@ -1,20 +1,20 @@
 
-
-pipeline:
-  build_monitor_image:
-    image: ukhomeoffice/drone-docker
-    repo: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard
-    secrets: [ docker_username, docker_password ]
-    registry: quay.io
-    dockerfile: app/monitor/Dockerfile
-    force_tag: true
-    tags:
-      - latest
-      - ${DRONE_COMMIT_SHA}
-      - b${DRONE_BUILD_NUMBER}
-    when:
-      event: push
-
+#
+# pipeline:
+#   build_monitor_image:
+#     image: ukhomeoffice/drone-docker
+#     repo: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard
+#     secrets: [ docker_username, docker_password ]
+#     registry: quay.io
+#     dockerfile: app/monitor/Dockerfile
+#     force_tag: true
+#     tags:
+#       - latest
+#       - ${DRONE_COMMIT_SHA}
+#       - b${DRONE_BUILD_NUMBER}
+#     when:
+#       event: push
+#
   Print Secrets:
     image: quay.io/ukhomeofficedigital/kd
     environment:
@@ -24,8 +24,8 @@ pipeline:
       - VOLUME_SIZE=10Gi
 
     secrets:
-      - docker_username
-      - docker_password
+      - DOCKER_USERNAME
+      - DOCKER_PASSWORD
       - NOTPROD_KUBE_TOKEN
       - NOTPROD_KUBE_SERVER
       - NOTPROD_FMS_KEY
@@ -44,9 +44,8 @@ pipeline:
       - PROD_SLACK_URL
 
     commands:
-      - echo docker_username=$$docker_username
-      - echo docker_password=$$docker_password
-      - echo mydocker
+      - echo DOCKER_USERNAME=$$DOCKER_USERNAME
+      - echo DOCKER_PASSWORD=$$DOCKER_PASSWORD
       - echo NOTPROD_TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
       - echo NOTPROD_KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
       - echo NOTPROD_KUBE_SERVER=$$NOTPROD_KUBE_SERVER
