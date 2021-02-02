@@ -1,6 +1,6 @@
 
-#
-# pipeline:
+
+pipeline:
 #   build_monitor_image:
 #     image: ukhomeoffice/drone-docker
 #     repo: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard
