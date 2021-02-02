@@ -46,6 +46,7 @@ pipeline:
     commands:
       - echo docker_username=$$docker_username
       - echo docker_password=$$docker_password
+      - echo mydocker
       - echo NOTPROD_TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
       - echo NOTPROD_KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
       - echo NOTPROD_KUBE_SERVER=$$NOTPROD_KUBE_SERVER
