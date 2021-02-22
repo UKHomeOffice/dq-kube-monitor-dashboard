@@ -155,8 +155,9 @@ def obtain_http_code(url_name, url, server):
         print(e)
 
 def obtain_api_pod_avail():
-    try:
-        for pod in api_pod_list:
+
+    for pod in api_pod_list:
+        try:
             http_status = requests.get(pod['url']).text
             if 'OK' in http_status:
                 status = 0
@@ -166,10 +167,10 @@ def obtain_api_pod_avail():
             dic_item = { 'name': pod['name'], 'status': status}
             avail_api_pod_list.append(dic_item)
 
-    except Exception as err:
-        dic_item = { 'name': pod['name'] , 'status': 2}
-        avail_api_pod_list.append(dic_item)
-        print(err)
+        except Exception as err:
+            dic_item = { 'name': pod['name'] , 'status': 2}
+            avail_api_pod_list.append(dic_item)
+            print(err)
 
 def obtain_lambda_avail(lambda_name,func_name,log_intrv):
     """
