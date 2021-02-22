@@ -134,7 +134,7 @@ spec:
         ports:
           - containerPort: 5000
       - name: opensslsidekick-fms
-        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:3d7b1ba7994d8a12b8d3f63f53b6ff9aac3e34d2
+        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:e48f82e489dec9741cbfb0e5d63eac3b29d0e1db
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true
