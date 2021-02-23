@@ -119,7 +119,7 @@ spec:
             name: auth-files
             readOnly: true
       - name: opensslsidekick-tab
-        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:b67-test
+        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true
@@ -130,11 +130,11 @@ spec:
           - name: HOST
             value: '10.3.0.12'
           - name: PORT
-            value: '8081'
+            value: '8088'
         ports:
           - containerPort: 5000
       - name: opensslsidekick-fms
-        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:b67-test
+        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true
@@ -149,7 +149,7 @@ spec:
         ports:
           - containerPort: 5001
       - name: opensslsidekick-gait
-        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:b67-test
+        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true
@@ -164,7 +164,7 @@ spec:
         ports:
           - containerPort: 5002
       - name: opensslsidekick-tab-rds
-        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:b67-test
+        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true
