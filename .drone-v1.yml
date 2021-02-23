@@ -114,6 +114,8 @@ steps:
       from_secret: PROD_SLACK_URL
     VOLUME_SIZE: 10Gi
   when:
+    branch:
+    - master
     event:
     - promote
     target:
