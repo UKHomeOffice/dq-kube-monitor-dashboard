@@ -1,4 +1,4 @@
-FROM quay.io/ukhomeofficedigital/python-alpine:3.7.6-alpine3.11
+FROM python:3.8.6-alpine3.12
 
 LABEL maintainer="dqdevops@digital.homeoffice.gov.uk"
 
