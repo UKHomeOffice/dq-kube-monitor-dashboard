@@ -41,12 +41,12 @@ def write_to_json():
 
 def main():
     log.info("Starting Scheduler......")
-    # schedule.every(1).minutes.at(":00").do(write_to_json)
-    schedule.every(5).minutes.at(":00").do(retreive_fresh)
-    # schedule.run_all()
+    schedule.every(5).minutes.at(":00").do(write_to_json)
+    # schedule.every(5).minutes.at(":00").do(retreive_fresh)
     while True:
         schedule.run_pending()
         time.sleep(5)
+
 
 if __name__== "__main__":
     main()
