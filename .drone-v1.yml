@@ -31,7 +31,7 @@ steps:
 
 - name: trivy_scan
   pull: if-not-exists
-  image: aquasec/trivy
+  image: quay.io/ukhomeofficedigital/trivyscanner:b82
   commands:
   - trivy --ignore-unfixed --exit-code 1 --no-progress quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard:${DRONE_COMMIT_SHA}
   when:
@@ -40,6 +40,7 @@ steps:
       - master
     event:
     - push
+
 
 
 - name: deploy_to_notprod
