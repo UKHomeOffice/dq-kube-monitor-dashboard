@@ -58,7 +58,8 @@ steps:
   - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
   - export SLACK_URL=$$PROD_SLACK_URL
   - kd --delete --file deployment.yml
-  - kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml -f network-policy.yml -f deployment.yml
+  - "kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml \
+      -f network-policy.yml -f deployment.yml  --timeout 5m0s"
   environment:
     AWS_DEFAULT_REGION:
       from_secret: AWS_DEFAULT_REGION
@@ -100,7 +101,8 @@ steps:
   - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
   - export SLACK_URL=$$PROD_SLACK_URL
   - kd --delete --file deployment.yml
-  - kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml -f network-policy.yml -f deployment.yml
+  - "kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml
+      -f network-policy.yml -f deployment.yml --timeout 5m0s"
   environment:
     AWS_DEFAULT_REGION:
       from_secret: AWS_DEFAULT_REGION

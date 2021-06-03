@@ -5,7 +5,9 @@ LABEL maintainer="dqdevops@digital.homeoffice.gov.uk"
 ENV USERMAP_UID 1000
 WORKDIR /APP
 
-RUN apk add --no-cache --quiet --update
+RUN apk update --quiet \
+      && apk upgrade --quiet \
+      && apk add --no-cache --quiet --update
 
 RUN apk --no-cache add curl \
 g++ \
