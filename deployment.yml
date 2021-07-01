@@ -178,6 +178,21 @@ spec:
             value: '8084'
         ports:
           - containerPort: 5003
+      - name: opensslsidekick-exttab
+        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+        env:
+          - name: EXPOSED_PORT
+            value: '5004'
+          - name: HOST
+            value: '10.3.0.11'
+          - name: PORT
+            value: '8080'
+        ports:
+          - containerPort: 5004
       volumes:
         - name: dq-monitor-storage
           persistentVolumeClaim:
