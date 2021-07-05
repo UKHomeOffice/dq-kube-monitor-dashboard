@@ -27,6 +27,7 @@ fresh_dic_list = []
 rds_list = []
 json_list = []
 dic_item  = {}
+tab_list = []
 
 def get_ssm_parameters(param_name_list):
     """
@@ -308,7 +309,7 @@ def obtainn_bfdp_fresh():
         fresh_dic_list.append(dic_item)
         print ("Internal Tableau DB connection error: ",e)
 
-def obtain_inttab_fresh(tab_name, tab_url, site):
+def obtain_inttab_fresh(tab_name,tab_url,site):
     try:
         # Obtain the
         userdata = """
@@ -358,10 +359,10 @@ def obtain_inttab_fresh(tab_name, tab_url, site):
 
 def obtain_tab_fresh():
     """
-    Obtain the data freshness of Int  and Ext Tableau Servers
+    Obtain the data freshness of Int and Ext Tableau Servers
     """
     tab_list = [
-        {"name": "Internal Tableau", "url": "http://127.0.0.1:5000", "site": "DQDashboard"},
+        {"name": "Internal Tableau", "url": "http://127.0.0.1:5000", "site": "DQDashboards"},
         {"name": "External Tableau", "url": "http://127.0.0.1:5004", "site": "CarrierDataQualityInsights"}
     ]
 
