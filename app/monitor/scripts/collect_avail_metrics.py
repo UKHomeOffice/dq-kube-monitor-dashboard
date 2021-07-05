@@ -29,7 +29,7 @@ service_list= [
     {"name": "fms", "url": os.environ.get('FMS_URL'), "server": 'http://fms:3000'},
     {"name": "crt", "url": os.environ.get('CRT_URL'), "server": 'http://crt-service:10443'},
     {"name": "tab", "url": os.environ.get('TAB_URL'), "server": 'http://127.0.0.1:5000'},
-    {"name": "exttab", "url": os.environ.get('EXTTAB_URL'), "server": 'http://127.0.0.1:5004')}
+    {"name": "exttab", "url": os.environ.get('EXTTAB_URL'), "server": 'http://127.0.0.1:5004'}
     ]
 
 api_pod_list = [
