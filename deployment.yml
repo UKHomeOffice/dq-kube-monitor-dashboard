@@ -46,6 +46,9 @@ spec:
             {{ if eq .ENV "prod" }}value: 'http://gait.dq.homeoffice.gov.uk'{{ end }}
           - name: TAB_URL
             value: 'http://127.0.0.1:5000'
+          - name: EXTTAB_URL
+            {{ if eq .ENV "notprod" }}value: 'http://carrierportal.notprod.dq.homeoffice.gov.uk'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://carrierportal.dq.homeoffice.gov.uk'{{ end }}
           - name: TAB_API_VERSION
             value: '3.7'
           - name: DRT_JSN_GRP

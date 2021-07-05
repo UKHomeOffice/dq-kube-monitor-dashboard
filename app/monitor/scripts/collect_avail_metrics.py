@@ -28,7 +28,8 @@ service_list= [
     {"name": "gait", "url": os.environ.get('GAIT_URL'), "server": 'http://ga-app-service:3000'},
     {"name": "fms", "url": os.environ.get('FMS_URL'), "server": 'http://fms:3000'},
     {"name": "crt", "url": os.environ.get('CRT_URL'), "server": 'http://crt-service:10443'},
-    {"name": "tab", "url": os.environ.get('TAB_URL'), "server": os.environ.get('TAB_URL')}
+    {"name": "tab", "url": os.environ.get('TAB_URL'), "server": 'http://127.0.0.1:5000'},
+    {"name": "exttab", "url": os.environ.get('EXTTAB_URL'), "server": 'http://127.0.0.1:5004')}
     ]
 
 api_pod_list = [
@@ -115,10 +116,10 @@ def obtain_http_code(url_name, url, server):
         elif url_name == 'crt':
             http_status = requests.get(url).status_code
             server_status = 200
-        elif url_name == 'tab':
+        elif url_name == 'tab' or url_name == 'exttab':
             http_status = requests.get(url).status_code
             # server_status = 200
-            server_info = requests.get(url+"/admin/systeminfo.xml").text
+            server_info = requests.get(server+"/admin/systeminfo.xml").text
             pattern = "<service status=\"Active\"/>"
             if pattern in server_info:
                 server_status = 200
