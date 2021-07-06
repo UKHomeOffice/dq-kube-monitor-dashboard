@@ -362,8 +362,8 @@ def obtain_tab_fresh():
     Obtain the data freshness of Int and Ext Tableau Servers
     """
     tab_list = [
-        {"name": "Internal Tableau", "url": "http://127.0.0.1:5000", "site": "DQDashboards"},
-        {"name": "External Tableau", "url": "http://127.0.0.1:5004", "site": "CarrierDataQualityInsights"}
+        {"name": "Internal Tableau", "url": "http://127.0.0.1:5000", "site": '"DQDashboards"'},
+        {"name": "External Tableau", "url": "http://127.0.0.1:5004", "site": '"CarrierDataQualityInsights"'}
     ]
 
     for tab in tab_list:
