@@ -345,7 +345,7 @@ def obtain_inttab_fresh(tab_name,tab_url,site):
                      tab_data = 0
                  elif jobstatus == "Running" or jobstatus == "InProgress":
                      tab_data = 1
-                 elif jobstatus == "Failed":
+                 elif jobstatus == "Failed" or jobstatus == "Error":
                      tab_data = 2
 
         dic_item = { 'name': tab_name , 'status': tab_data}
@@ -362,8 +362,8 @@ def obtain_tab_fresh():
     Obtain the data freshness of Int and Ext Tableau Servers
     """
     tab_list = [
-        {"name": "Internal Tableau", "url": "http://127.0.0.1:5000", "site": '"DQDashboards"'},
-        {"name": "External Tableau", "url": "http://127.0.0.1:5004", "site": '"CarrierDataQualityInsights"'}
+        {"name": "inttab", "url": "http://127.0.0.1:5000", "site": '"DQDashboards"'},
+        {"name": "exttab", "url": "http://127.0.0.1:5004", "site": '"CarrierDataQualityInsights"'}
     ]
 
     for tab in tab_list:
