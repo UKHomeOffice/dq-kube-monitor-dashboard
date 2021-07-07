@@ -24,29 +24,15 @@ def write_to_json():
     prometheous agent to be sent to sysdig
     """
     try:
-        # f = open("/APP/scripts/tracing.json", "w")
-        # print("avail_dic_list is: ",avail())
-        # for item in avail():
-        #     f.write("# HELP availability_of_"+item['name']+ " to check service availability \n")
-        #     f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
-        #
-        # print("fresh_dic_list is: ",fresh())
-        # for item in fresh():
-        #     f.write("# HELP freshness_of_"+item['name']+ " to check data freshness \n")
-        #     f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
-        # f.close()
         with open("/APP/scripts/tracing.json", "w") as f:
-
             print("avail_dic_list is: ",avail())
             for item in avail():
                 f.write("# HELP availability_of_"+item['name']+ " to check service availability \n")
                 f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
-
             print("fresh_dic_list is: ",fresh())
             for item in fresh():
                 f.write("# HELP freshness_of_"+item['name']+ " to check data freshness \n")
                 f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
-
         log.info("File created")
     except Exception as e:
         log.error(e)
