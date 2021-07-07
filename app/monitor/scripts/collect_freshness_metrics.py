@@ -27,6 +27,7 @@ fresh_dic_list = []
 rds_list = []
 json_list = []
 dic_item  = {}
+tab_list = []
 
 def get_ssm_parameters(param_name_list):
     """
@@ -286,7 +287,7 @@ def obtainn_bfdp_fresh():
         now = now.strftime("%H:%M:%S")
         FMT = '%H:%M:%S'
         tdelta = datetime.datetime.strptime(now, FMT) - datetime.datetime.strptime(latest, FMT)
-        if tdelta.days < 0:
+        if tdelta.days <= 0:
             tdelta = datetime.timedelta(days=0,seconds=tdelta.seconds, microseconds=tdelta.microseconds)
 
         sec = tdelta.total_seconds()
@@ -308,17 +309,17 @@ def obtainn_bfdp_fresh():
         fresh_dic_list.append(dic_item)
         print ("Internal Tableau DB connection error: ",e)
 
-def obtain_inttab_fresh():
+def obtain_inttab_fresh(tab_name,tab_url,site):
     try:
         # Obtain the
         userdata = """
         <tsRequest>
         <credentials name="tab_admin" password="""+os.environ.get('TAB_ADMIN_PWD')+""">
-                <site contentUrl="DQDashboards" />
+                <site contentUrl="""+site+""" />
         </credentials>
         </tsRequest>
         """
-        tab_url = os.environ.get('TAB_URL')
+        # tab_url = os.environ.get('TAB_URL')
         api_version = os.environ.get('TAB_API_VERSION')
         auth_url = tab_url+"/api/"+api_version+"/auth/signin"
         headers = {'Content-Type': 'application/xml'}
@@ -344,17 +345,30 @@ def obtain_inttab_fresh():
                      tab_data = 0
                  elif jobstatus == "Running" or jobstatus == "InProgress":
                      tab_data = 1
-                 elif jobstatus == "Failed":
+                 elif jobstatus == "Failed" or jobstatus == "Error":
                      tab_data = 2
 
-        dic_item = { 'name': "tab_data" , 'status': tab_data}
+        dic_item = { 'name': tab_name , 'status': tab_data}
         fresh_dic_list.append(dic_item)
-        log.info('Obtained the Freshness status of DQ Reporting Dash')
+        log.info('Obtained the Freshness status of '+tab_name)
 
     except Exception as e:
-        dic_item = { 'name': "tab_data" , 'status': 2}
+        dic_item = { 'name': tab_name , 'status': 2}
         fresh_dic_list.append(dic_item)
-        print ("DQ Reporting Dash connection error: ",e)
+        print (tab_name, " connection error: ",e)
+
+def obtain_tab_fresh():
+    """
+    Obtain the data freshness of Int and Ext Tableau Servers
+    """
+    tab_list = [
+        {"name": "inttab", "url": "http://127.0.0.1:5000", "site": '"DQDashboards"'},
+        {"name": "exttab", "url": "http://127.0.0.1:5004", "site": '"CarrierDataQualityInsights"'}
+    ]
+
+    for tab in tab_list:
+        obtain_inttab_fresh(tab['name'], tab['url'], tab['site'])
+
 
 def service_status_list():
     """
@@ -367,6 +381,6 @@ def service_status_list():
     obtain_gait_fresh()
     obtain_drt_fresh()
     obtainn_bfdp_fresh()
-    obtain_inttab_fresh()
+    obtain_tab_fresh()
 
     return fresh_dic_list

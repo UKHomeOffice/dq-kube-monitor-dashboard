@@ -46,6 +46,9 @@ spec:
             {{ if eq .ENV "prod" }}value: 'http://gait.dq.homeoffice.gov.uk'{{ end }}
           - name: TAB_URL
             value: 'http://127.0.0.1:5000'
+          - name: EXTTAB_URL
+            {{ if eq .ENV "notprod" }}value: 'http://carrierportal.notprod.dq.homeoffice.gov.uk'{{ end }}
+            {{ if eq .ENV "prod" }}value: 'http://carrierportal.dq.homeoffice.gov.uk'{{ end }}
           - name: TAB_API_VERSION
             value: '3.7'
           - name: DRT_JSN_GRP
@@ -178,6 +181,21 @@ spec:
             value: '8084'
         ports:
           - containerPort: 5003
+      - name: opensslsidekick-exttab
+        image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:master
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+        env:
+          - name: EXPOSED_PORT
+            value: '5004'
+          - name: HOST
+            value: '10.3.0.11'
+          - name: PORT
+            value: '8080'
+        ports:
+          - containerPort: 5004
       volumes:
         - name: dq-monitor-storage
           persistentVolumeClaim:
