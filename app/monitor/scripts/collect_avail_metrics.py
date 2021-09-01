@@ -77,7 +77,7 @@ def alert_to_slack(service, status_code, check_type):
         url = os.environ.get('SLACK_URL')
         message = service + "\nError Code: " + str(status_code)
         if check_type is 'avail':
-            title = service + "is not reachable"
+            title = service + "may not reachable"
         if check_type is 'fresh':
             title = "There seems to be an issue with" +service+ "Data Freshness"
         slack_data = {
@@ -133,7 +133,12 @@ def obtain_http_code(url_name, url, server):
             status = 0
         if http_status != 200:
             status = 1
-            # alert_to_slack(url,http_status,'avail')
+            if url_name == 'tab':
+                alert_to_slack('Internal Tableau',server_info,'avail')
+            elif url_name == 'exttab':
+                alert_to_slack('External Tableau',server_info,'avail')
+            else:
+                alert_to_slack(url,http_status,'avail')
         if server_status != 200:
             status = 1
             # if url_name is 'tab':
