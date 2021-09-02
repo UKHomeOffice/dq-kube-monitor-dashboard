@@ -134,17 +134,19 @@ def obtain_http_code(url_name, url, server):
         if http_status != 200:
             status = 1
             if url_name == 'tab':
-                alert_to_slack('Internal Tableau',server_info,'avail')
+                alert_to_slack('Internal Tableau',http_status,'avail')
             elif url_name == 'exttab':
-                alert_to_slack('External Tableau',server_info,'avail')
+                alert_to_slack('External Tableau',http_status,'avail')
             else:
                 alert_to_slack(url,http_status,'avail')
         if server_status != 200:
             status = 1
-            # if url_name is 'tab':
-            #     alert_to_slack('Internal Tableau',server_info,'avail')
-            # else:
-            #     alert_to_slack(server,server_status,'avail')
+            if url_name is 'tab':
+                alert_to_slack('Internal Tableau Service Status',server_info,'avail')
+            elif url_name == 'exttab':
+                alert_to_slack('External Tableau Service Status',server_info,'avail')
+            else:
+                alert_to_slack('Pod hosting '+server,server_status,'avail')
         if (http_status != 200 and server_status != 200):
             status = 2
 
