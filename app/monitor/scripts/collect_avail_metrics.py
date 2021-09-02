@@ -8,14 +8,6 @@ import requests
 import datetime
 import boto3
 
-# from botocore.config import Config
-
-# CONFIG = Config(
-#     retries=dict(
-#         max_attempts=20
-#     )
-# )
-
 #Setting log to STOUT
 log = logging.getLogger(__name__)
 out_hdlr = logging.StreamHandler(sys.stdout)
@@ -61,7 +53,6 @@ avail_api_pod_list = []
 lambda_list = []
 lam_list = []
 lam_info_list = []
-# rds_list = []
 dic_item  = {}
 lambda_item = {}
 
@@ -77,9 +68,9 @@ def alert_to_slack(service, status_code, check_type):
         url = os.environ.get('SLACK_URL')
         message = service + "\nError Code: " + str(status_code)
         if check_type is 'avail':
-            title = service + "may not reachable"
+            title = ":fire: :sad_parrot: "+service+ " may not reachable :sad_parrot: :fire:"
         if check_type is 'fresh':
-            title = "There seems to be an issue with" +service+ "Data Freshness"
+            title = ":fire: :sad_parrot: There seems to be an issue with" +service+ "Data Freshness :sad_parrot: :fire:"
         slack_data = {
             "username": service + "Bot",
             "icon_emoji": ":warning:",
@@ -90,9 +81,11 @@ def alert_to_slack(service, status_code, check_type):
                         {
                             "title": title,
                             "value": message,
-                            "short": "false",
+                            "short": "false"
                         }
-                    ]
+                    ],
+                    "footer": "Kubernetes API",
+                    "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
                 }
             ]
         }
@@ -101,7 +94,7 @@ def alert_to_slack(service, status_code, check_type):
         response = requests.post(url, data=json.dumps(slack_data), headers=headers)
 
     except Exception as err:
-        print('The following error has occurred',err)
+        print('The following error has occurred while sending slack message: ',err)
 
 # Setting log to STOUT
 def obtain_http_code(url_name, url, server):
@@ -122,14 +115,14 @@ def obtain_http_code(url_name, url, server):
             http_status = requests.get(url).status_code
 
     except requests.exceptions.RequestException as e:
-        http_status = 9000
+        # http_status = 9000
         print(url_name, "http status code check error:" ,e)
-        if url_name == 'tab':
-            alert_to_slack('Internal Tableau frontend','unknown','avail')
-        elif url_name == 'exttab':
-            alert_to_slack('External Tableau frontend','unknown','avail')
-        else:
-            alert_to_slack(url,'unknown','avail')
+        # if url_name == 'tab':
+        #     alert_to_slack('Internal Tableau frontend','unknown','avail')
+        # elif url_name == 'exttab':
+        #     alert_to_slack('External Tableau frontend','unknown','avail')
+        # else:
+        #     alert_to_slack(url,'unknown','avail')
 
     # obtain service status on pod
     try:
@@ -148,14 +141,14 @@ def obtain_http_code(url_name, url, server):
             server_status = requests.get(server).status_code
 
     except requests.exceptions.RequestException as e:
-        server_status = 9000
+        # server_status = 9000
         print(url_name, "Service on pod status check error:" ,e)
-        if url_name == 'tab':
-            alert_to_slack('Internal Tableau Service Status','unknown','avail')
-        elif url_name == 'exttab':
-            alert_to_slack('External Tableau Service Status','unknown','avail')
-        else:
-            alert_to_slack('Service hosting'+server,'unknown','avail')
+        # if url_name == 'tab':
+        #     alert_to_slack('Internal Tableau Service Status','unknown','avail')
+        # elif url_name == 'exttab':
+        #     alert_to_slack('External Tableau Service Status','unknown','avail')
+        # else:
+        #     alert_to_slack('Service hosting'+server,'unknown','avail')
 
     if (http_status == 200 and server_status == 200):
         status = 0
