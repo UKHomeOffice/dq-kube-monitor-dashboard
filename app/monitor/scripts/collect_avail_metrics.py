@@ -109,16 +109,34 @@ def obtain_http_code(url_name, url, server):
     Obtain the http status code of each services
     and then convert it to 0 or 2
     """
+    # Obtain http code for front end
     try:
         if url_name == 'fms':
             http_status = requests.get(url, cert=(fms_cert, fms_key)).status_code
-            server_status = requests.get(server).status_code
         elif url_name == 'crt':
             http_status = requests.get(url).status_code
-            server_status = 200
         elif url_name == 'tab' or url_name == 'exttab':
             http_status = requests.get(url).status_code
-            # server_status = 200
+        else:
+            http_status = requests.get(url).status_code
+
+    except requests.exceptions.RequestException as e:
+        http_status = 9000
+        print(url_name, "http status code check error:" ,e)
+        if url_name == 'tab':
+            alert_to_slack('Internal Tableau frontend','unknown','avail')
+        elif url_name == 'exttab':
+            alert_to_slack('External Tableau frontend','unknown','avail')
+        else:
+            alert_to_slack(url,'unknown','avail')
+
+    # obtain service status on pod
+    try:
+        if url_name == 'fms':
+            server_status = requests.get(server).status_code
+        elif url_name == 'crt':
+            server_status = 200
+        elif url_name == 'tab' or url_name == 'exttab':
             server_info = requests.get(server+"/admin/systeminfo.xml").text
             pattern = "<service status=\"Active\"/>"
             if pattern in server_info:
@@ -126,41 +144,42 @@ def obtain_http_code(url_name, url, server):
             else:
                 server_status = 400
         else:
-            http_status = requests.get(url).status_code
             server_status = requests.get(server).status_code
 
-        if (http_status == 200 and server_status == 200):
-            status = 0
-        if http_status != 200:
-            status = 1
-            if url_name == 'tab':
-                alert_to_slack('Internal Tableau',http_status,'avail')
-            elif url_name == 'exttab':
-                alert_to_slack('External Tableau',http_status,'avail')
-            else:
-                alert_to_slack(url,http_status,'avail')
-        if server_status != 200:
-            status = 1
-            if url_name is 'tab':
-                alert_to_slack('Internal Tableau Service Status',server_info,'avail')
-            elif url_name == 'exttab':
-                alert_to_slack('External Tableau Service Status',server_info,'avail')
-            else:
-                alert_to_slack('Pod hosting '+server,server_status,'avail')
-        if (http_status != 200 and server_status != 200):
-            status = 2
-
-        dic_item = { 'name': url_name , 'status': status}
-        avail_dic_list.append(dic_item)
-        log.info("Obtained the Availability status of "+url_name)
-
-    # except requests.ConnectionError as e:
     except requests.exceptions.RequestException as e:
-    # except:
-        dic_item = { 'name': url_name , 'status': 2}
-        avail_dic_list.append(dic_item)
-        # log.error("Not able to obtain the Availability status of "+url_name)
-        print(e)
+        server_status = 9000
+        print(url_name, "Service on pod status check error:" ,e)
+        if url_name == 'tab':
+            alert_to_slack('Internal Tableau Service Status','unknown','avail')
+        elif url_name == 'exttab':
+            alert_to_slack('External Tableau Service Status','unknown','avail')
+        else:
+            alert_to_slack('Service hosting'+server,'unknown','avail')
+
+    if (http_status == 200 and server_status == 200):
+        status = 0
+    if http_status != 200:
+        status = 1
+        if url_name == 'tab':
+            alert_to_slack('Internal Tableau frontend',http_status,'avail')
+        elif url_name == 'exttab':
+            alert_to_slack('External Tableau frontend',http_status,'avail')
+        else:
+            alert_to_slack(url,http_status,'avail')
+    if server_status != 200:
+        status = 1
+        if url_name is 'tab':
+            alert_to_slack('Internal Tableau Service Status',server_info,'avail')
+        elif url_name == 'exttab':
+            alert_to_slack('External Tableau Service Status',server_info,'avail')
+        else:
+            alert_to_slack('Service hosting'+server,server_status,'avail')
+    if (http_status != 200 and server_status != 200):
+        status = 2
+
+    dic_item = { 'name': url_name , 'status': status}
+    avail_dic_list.append(dic_item)
+    log.info("Obtained the Availability status of "+url_name)
 
 def obtain_api_pod_avail():
 
