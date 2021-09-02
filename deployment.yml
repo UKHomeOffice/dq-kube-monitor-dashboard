@@ -110,6 +110,11 @@ spec:
               secretKeyRef:
                 name: dq-monitor-secrets
                 key: TAB_ADMIN_PWD
+          - name: SLACK_URL
+            valueFrom:
+              secretKeyRef:
+                name: dq-monitor-secrets
+                key: SLACK_URL
         ports:
           - containerPort: 8000
         volumeMounts:
