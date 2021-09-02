@@ -109,6 +109,7 @@ def obtain_http_code(url_name, url, server):
     Obtain the http status code of each services
     and then convert it to 0 or 2
     """
+    server_info=""
     # Obtain http code for front end
     try:
         if url_name == 'fms':
