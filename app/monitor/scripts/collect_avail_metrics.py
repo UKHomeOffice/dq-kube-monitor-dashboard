@@ -67,16 +67,16 @@ def alert_to_slack(service, status_code, check_type):
     try:
         url = os.environ.get('SLACK_URL')
         message = service + "\nError Code: " + str(status_code)
+        title = ":fire: :sad_parrot: "+service+" Not Reachable :sad_parrot: :fire:"
         slack_data = {
-            "text": ":fire: :sad_parrot: "+service+" may not be reachable :sad_parrot: :fire:",
+            "username": service + "Bot",
+            "icon_emoji": ":warning:",
             "attachments": [
                 {
-                    "text": "{0}".format(text),
                     "color": "#EE3333",
-                    "attachment_type": "default",
                     "fields": [
                         {
-                            "title": service,
+                            "title": title,
                             "value": message,
                             "short": "false"
                         }
@@ -86,9 +86,10 @@ def alert_to_slack(service, status_code, check_type):
                 }
             ]
         }
-        byte_length = str(sys.getsizeof(slack_data))
-        headers = {'Content-Type': "application/json", 'Content-Length': byte_length}
-        response = requests.post(url, data=json.dumps(slack_data).encode('ascii'), headers=headers)
+        # byte_length = str(sys.getsizeof(slack_data))
+        # headers = {'Content-Type': "application/json", 'Content-Length': byte_length}
+        headers = {'Content-Type': "application/json"}
+        response = requests.post(url, data=json.dumps(slack_data), headers=headers)
         log.info('notification sent to Slack')
 
     except Exception as err:
