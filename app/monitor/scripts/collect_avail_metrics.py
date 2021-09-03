@@ -74,7 +74,7 @@ def alert_to_slack(service, status_code, check_type):
         slack_data = {
             "username": service + "Bot",
             "icon_emoji": ":warning:",
-            "text": title
+            "text": title,
             "attachments": [
                 {
                     "text": "{0}".format(text),
