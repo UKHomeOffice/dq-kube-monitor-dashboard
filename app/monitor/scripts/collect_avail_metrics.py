@@ -68,7 +68,7 @@ def alert_to_slack(service, status_code, check_type):
         url = os.environ.get('SLACK_URL')
         message = service + "\nError Code: " + str(status_code)
         if check_type is 'avail':
-            title = ":fire: :sad_parrot: "+service+ " may not reachable :sad_parrot: :fire:"
+            title = ":fire: :sad_parrot: "+service+" may not reachable :sad_parrot: :fire:"
         if check_type is 'fresh':
             title = ":fire: :sad_parrot: There seems to be an issue with" +service+ "Data Freshness :sad_parrot: :fire:"
         slack_data = {
@@ -76,7 +76,9 @@ def alert_to_slack(service, status_code, check_type):
             "icon_emoji": ":warning:",
             "attachments": [
                 {
+                    "text": "{0}".format(text),
                     "color": "#EE3333",
+                    "attachment_type": "default",
                     "fields": [
                         {
                             "title": title,
@@ -115,7 +117,7 @@ def obtain_http_code(url_name, url, server):
             http_status = requests.get(url).status_code
 
     except requests.exceptions.RequestException as e:
-        # http_status = 9000
+        http_status = 000
         print(url_name, "http status code check error:" ,e)
         # if url_name == 'tab':
         #     alert_to_slack('Internal Tableau frontend','unknown','avail')
@@ -141,7 +143,7 @@ def obtain_http_code(url_name, url, server):
             server_status = requests.get(server).status_code
 
     except requests.exceptions.RequestException as e:
-        # server_status = 9000
+        server_status = 000
         print(url_name, "Service on pod status check error:" ,e)
         # if url_name == 'tab':
         #     alert_to_slack('Internal Tableau Service Status','unknown','avail')
@@ -155,19 +157,19 @@ def obtain_http_code(url_name, url, server):
     if http_status != 200:
         status = 1
         if url_name == 'tab':
-            alert_to_slack('Internal Tableau frontend',http_status,'avail')
+            alert_to_slack('Internal Tableau Frontend',http_status,'avail')
         elif url_name == 'exttab':
-            alert_to_slack('External Tableau frontend',http_status,'avail')
+            alert_to_slack('External Tableau Frontend',http_status,'avail')
         else:
             alert_to_slack(url,http_status,'avail')
     if server_status != 200:
         status = 1
         if url_name is 'tab':
-            alert_to_slack('Internal Tableau Service Status',server_info,'avail')
+            alert_to_slack('Internal Tableau Service',server_info,'avail')
         elif url_name == 'exttab':
-            alert_to_slack('External Tableau Service Status',server_info,'avail')
+            alert_to_slack('External Tableau Service',server_info,'avail')
         else:
-            alert_to_slack('Service hosting'+server,server_status,'avail')
+            alert_to_slack('Service hosting '+server,server_status,'avail')
     if (http_status != 200 and server_status != 200):
         status = 2
 
