@@ -76,7 +76,6 @@ def alert_to_slack(service, status_code, check_type):
             "icon_emoji": ":warning:",
             "attachments": [
                 {
-                    "text": "{0}".format(text),
                     "color": "#EE3333",
                     "attachment_type": "default",
                     "fields": [
@@ -93,7 +92,8 @@ def alert_to_slack(service, status_code, check_type):
         }
         byte_length = str(sys.getsizeof(slack_data))
         headers = {'Content-Type': "application/json", 'Content-Length': byte_length}
-        response = requests.post(url, data=json.dumps(slack_data), headers=headers)
+        response = requests.post(url, data=json.dumps(slack_data).encode('ascii'), headers=headers)
+        log.info('notification sent to Slack')
 
     except Exception as err:
         print('The following error has occurred while sending slack message: ',err)
