@@ -67,14 +67,11 @@ def alert_to_slack(service, status_code, check_type):
     try:
         url = os.environ.get('SLACK_URL')
         message = service + "\nError Code: " + str(status_code)
-        if check_type is 'avail':
-            title = ":fire: :sad_parrot: "+service+" may not be reachable :sad_parrot: :fire:"
-        if check_type is 'fresh':
-            title = ":fire: :sad_parrot: There seems to be an issue with" +service+ "Data Freshness :sad_parrot: :fire:"
         slack_data = {
-            "text": title.format(text),
+            "text": ":fire: :sad_parrot: "+service+" may not be reachable :sad_parrot: :fire:",
             "attachments": [
                 {
+                    "text": "{0}".format(text),
                     "color": "#EE3333",
                     "attachment_type": "default",
                     "fields": [
