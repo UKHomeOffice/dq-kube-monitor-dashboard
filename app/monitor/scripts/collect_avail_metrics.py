@@ -67,8 +67,8 @@ def alert_to_slack(service, status_code, check_type):
 
     try:
         url = os.environ.get('SLACK_URL')
-        message = service + "\nError Code: " + str(status_code)
-        title = ":fire: :sad_parrot: "+service+" is Not Reachable :sad_parrot: :fire:"
+        message = "*Error Code:* " + str(status_code)
+        title = ":fire: :sad_parrot: *"+service+"* is Not Reachable :sad_parrot: :fire:"
         slack_data = {
             "text": title,
             "attachments": [
