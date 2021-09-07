@@ -64,20 +64,22 @@ def alert_to_slack(service, status_code, check_type):
     Returns:
         Slack API repsonse
     """
+
     try:
         url = os.environ.get('SLACK_URL')
         message = service + "\nError Code: " + str(status_code)
-        title = ":fire: :sad_parrot: "+service+" Not Reachable :sad_parrot: :fire:"
+        title = ":fire: :sad_parrot: "+service+" is Not Reachable :sad_parrot: :fire:"
         slack_data = {
-            "username": service + "Bot",
-            "icon_emoji": ":warning:",
+            "text": title,
             "attachments": [
                 {
-                    "color": "#EE3333",
+                    "text": "{0}".format(message),
+                    "color": "#B22222",
+                    "attachment_type": "default",
                     "fields": [
                         {
-                            "title": title,
-                            "value": message,
+                            "title": "Priority",
+                            "value": "High",
                             "short": "false"
                         }
                     ],
@@ -85,9 +87,8 @@ def alert_to_slack(service, status_code, check_type):
                     "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
                 }
             ]
-        }
-        # byte_length = str(sys.getsizeof(slack_data))
-        # headers = {'Content-Type': "application/json", 'Content-Length': byte_length}
+            }
+
         headers = {'Content-Type': "application/json"}
         response = requests.post(url, data=json.dumps(slack_data), headers=headers)
         log.info('notification sent to Slack')
@@ -125,8 +126,9 @@ def obtain_http_code(url_name, url, server):
             server_status = 200
         elif url_name == 'tab' or url_name == 'exttab':
             server_info = requests.get(server+"/admin/systeminfo.xml").text
-            pattern = "<service status=\"Active\"/>"
-            if pattern in server_info:
+            pattern1 = "<service status=\"Active\"/>"
+            pattern2 = "<service status=\"Busy\"/>"
+            if pattern1 in server_info or pattern2 in server_info:
                 server_status = 200
             else:
                 server_status = 400
