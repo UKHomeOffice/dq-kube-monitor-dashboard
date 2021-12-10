@@ -31,8 +31,9 @@ steps:
 
 - name: trivy_scan
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/trivyscanner:b82
+  image: quay.io/ukhomeofficedigital/trivyscanner:master
   commands:
+  - trivy --version
   - trivy --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard:${DRONE_COMMIT_SHA}
   when:
     branch:
