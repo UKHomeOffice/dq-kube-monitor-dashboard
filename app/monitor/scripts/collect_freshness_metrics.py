@@ -141,22 +141,6 @@ def obtain_fms_fresh():
         fresh_dic_list.append(dic_item)
         print ("fms db connection error", e)
 
-# def final_fms_check():
-#     temp_fms_list.clear()
-#     dic_item = {}
-#     fms_error=0
-#     for i in range(3):
-#         obtain_fms_fresh()
-#         time.sleep(120)
-#     for j in temp_fms_list:
-#         if j['status'] == 2:
-#             fms_error++1
-#     if fms_error == 3:
-#         dic_item = { 'name': "fms_data" , 'status': 2}
-#     else:
-#         dic_item = { 'name': "fms_data" , 'status': 0}
-#     fresh_dic_list.append(dic_item)
-
 def obtain_gait_fresh():
     """
     Query the GAIT RDS DB for new rows
@@ -272,7 +256,7 @@ def obtainn_bfdp_fresh():
             'options': '-c statement_timeout=60000'
         }
 
-        dbstatement = "select last_message_datetime_received from rpt_internal.view_last_message_datetime_received"
+        dbstatement = "select latest_api_message_received_datetime from rpt_internal.view_latest_api_message_received_datetime"
 
         conn = psycopg2.connect(**conn_parameters)
         log.info('Connected to Internal Tableau RDS')

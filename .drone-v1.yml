@@ -34,15 +34,13 @@ steps:
   image: quay.io/ukhomeofficedigital/trivyscanner:master
   commands:
   - trivy --version
-  - trivy --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard:${DRONE_COMMIT_SHA}
+  - trivy image --ignore-unfixed --exit-code 1 --no-progress quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard:${DRONE_COMMIT_SHA}
   when:
     branch:
       exclude:
       - master
     event:
     - push
-
-
 
 - name: deploy_to_notprod
   pull: if-not-exists
