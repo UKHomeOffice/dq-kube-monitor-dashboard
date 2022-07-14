@@ -6,6 +6,7 @@ import schedule
 from collect_avail_metrics import service_status_list as avail
 from collect_freshness_metrics import service_status_list as fresh
 from athena_queries import query_results as api_zips
+from athena_queries import send_alert
 
 log = logging.getLogger(__name__)
 out_hdlr = logging.StreamHandler(sys.stdout)
@@ -57,7 +58,8 @@ def retrive_api_zips():
 def main():
     log.info("Starting Scheduler......")
     schedule.every(5).minutes.at(":00").do(write_to_json)
-    schedule.every().day.at("08:33").do(retrive_api_zips)
+    schedule.every(10).minutes.at(":02").do(retrive_api_zips)
+    schedule.every().day.at("08:33").do(send_alert)
     while True:
         schedule.run_pending()
         time.sleep(1)

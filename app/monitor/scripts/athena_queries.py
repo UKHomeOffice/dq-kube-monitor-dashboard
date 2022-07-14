@@ -169,6 +169,26 @@ def query_results():
 
     obtain_zip_count(client,prevday)
 
+    return athena_query_results
+
+def send_alert():
+    """
+    Send slack alert if No of zips not matching
+    last file seq number
+    """
+    values = get_ssm_parameters(
+        ["/tableau-athena-user-default-id-apps-"+os.environ.get('ENV')+"-dq",
+         "/tableau-athena-user-default-key-apps-"+os.environ.get('ENV')+"-dq"],conn_parameters)
+
+    session = boto3.Session(
+        aws_access_key_id=values['user'],
+        aws_secret_access_key=values['pass']
+    )
+
+    client = session.client('athena', region_name=conn_parameters["region"])
+
+    obtain_zip_count(client,prevday)
+
     # send the results to slack
     no_zips = athena_query_results[0]['query_result']
     last_zip = athena_query_results[1]['query_result']
@@ -180,5 +200,3 @@ def query_results():
 
     if int(no_zips) != int(seq_of_lastzip):
         alert_to_slack(prevday, no_zips, last_zip)
-
-    return athena_qery_results
