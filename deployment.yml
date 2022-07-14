@@ -35,6 +35,8 @@ spec:
             cpu: 1.5
             memory: 2.5Gi
         env:
+          - name: ENV
+            value: $ENV
           - name: FMS_URL
             {{ if eq .ENV "notprod" }}value: 'http://fms.notprod.dq.homeoffice.gov.uk'{{ end }}
             {{ if eq .ENV "prod" }}value: 'http://fms.dq.homeoffice.gov.uk'{{ end }}
