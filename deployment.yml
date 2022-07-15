@@ -15,8 +15,10 @@ spec:
         name: dq-monitor
       annotations:
         prometheus.io/scrape: "true"
-        # prometheus.io/port: "8000"
-        # prometheus.io/path: "/dq-monitor/prometheus"
+        prometheus.io/port_1: "8000"
+        prometheus.io/port_2: "8001"
+        prometheus.io/path_1: "/dq-monitor/prometheus"
+        prometheus.io/path_1: "/dq-monitor/api"
     spec:
       securityContext:
         runAsUser: 1000
