@@ -35,17 +35,6 @@ def write_to_json():
             for item in fresh():
                 f.write("# HELP freshness_of_"+item['name']+ " to check data freshness \n")
                 f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
-        log.info("File created")
-    except Exception as e:
-        log.error(e)
-
-def retrive_api_zips():
-    """
-    collect the No of PARSED AP Zip files of the previous day
-    Push fiigers to sysdig by updating api.json
-    """
-    try:
-        with open("/APP/scripts/api.json", "w") as f:
             log.info("The PARSED Zip file stats are: "+api_zips())
             for item in api_zips():
                 f.write("# HELP PARSED API "+item['name']+" \n")
@@ -57,9 +46,9 @@ def retrive_api_zips():
 
 def main():
     log.info("Starting Scheduler......")
-    schedule.every(5).minutes.at(":00").do(write_to_json)
-    schedule.every(10).minutes.at(":02").do(retrive_api_zips)
-    schedule.every().day.at("08:33").do(send_alert)
+    schedule.every(10).minutes.at(":00").do(write_to_json)
+    # schedule.every(10).minutes.at(":02").do(retrive_api_zips)
+    schedule.every().day.at("08:37").do(send_alert)
     while True:
         schedule.run_pending()
         time.sleep(1)
