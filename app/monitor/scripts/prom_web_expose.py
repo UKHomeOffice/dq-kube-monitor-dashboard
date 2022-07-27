@@ -1,5 +1,4 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
 class StoreHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/dq-monitor/prometheus':
