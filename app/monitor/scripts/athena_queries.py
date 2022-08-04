@@ -152,6 +152,8 @@ def obtain_zip_count(client,dayformat):
         dic_item = {'name': item['name'], 'query_result': result}
         athena_query_results.append(dic_item)
 
+    return athena_query_results
+
 def query_results():
     """
     create a list of query results
