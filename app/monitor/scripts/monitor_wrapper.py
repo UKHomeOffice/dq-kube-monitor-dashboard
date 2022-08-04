@@ -46,9 +46,9 @@ def write_to_json():
 
 def main():
     log.info("Starting Scheduler......")
-    schedule.every(10).minutes.at(":00").do(write_to_json)
+    schedule.every(7).minutes.at(":00").do(write_to_json)
     # schedule.every(10).minutes.at(":02").do(retrive_api_zips)
-    schedule.every().day.at("08:37").do(api_count_alert)
+    schedule.every().day.at("08:33").do(api_count_alert)
     while True:
         schedule.run_pending()
         time.sleep(1)
