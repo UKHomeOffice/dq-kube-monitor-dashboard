@@ -27,15 +27,15 @@ def write_to_json():
     """
     try:
         with open("/APP/scripts/tracing.json", "w") as f:
-            log.info("avail_dic_list is: "+avail())
+            print("avail_dic_list is: ",avail())
             for item in avail():
                 f.write("# HELP availability_of_"+item['name']+ " to check service availability \n")
                 f.write("dq_"+item['name']+"_availability " +str(item['status'])+ "\n")
-            log.info("fresh_dic_list is: "+fresh())
+            print("fresh_dic_list is: ",fresh())
             for item in fresh():
                 f.write("# HELP freshness_of_"+item['name']+ " to check data freshness \n")
                 f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
-            log.info("The PARSED Zip file stats are: "+api_zips())
+            print("The PARSED Zip file stats are: ",api_zips())
             for item in api_zips():
                 f.write("# HELP PARSED API "+item['name']+" \n")
                 f.write("dq_api_pasred_"+item['name']+" "+str(item['query_result'])+ "\n")
