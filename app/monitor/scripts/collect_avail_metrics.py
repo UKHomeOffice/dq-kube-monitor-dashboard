@@ -151,7 +151,7 @@ def obtain_http_code(url_name, url, server):
             alert_to_slack(url,http_status,'avail')
     if server_status != 200:
         status = 1
-        if url_name is 'tab':
+        if url_name == 'tab':
             alert_to_slack('Internal Tableau Service',server_info,'avail')
         elif url_name == 'exttab':
             alert_to_slack('External Tableau Service',server_info,'avail')

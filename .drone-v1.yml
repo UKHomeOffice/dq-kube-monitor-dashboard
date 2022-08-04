@@ -46,6 +46,7 @@ steps:
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd
   commands:
+  # - export ENV=$$ENV
   - export FMS_KEY=$$NOTPROD_FMS_KEY
   - export FMS_CERT=$$NOTPROD_FMS_CERT
   - export TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
@@ -89,6 +90,7 @@ steps:
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd
   commands:
+  # - export ENV=$$ENV
   - export FMS_KEY=$$PROD_FMS_KEY
   - export FMS_CERT=$$PROD_FMS_CERT
   - export TAB_ADMIN_PWD=$$PROD_TAB_ADMIN_PWD

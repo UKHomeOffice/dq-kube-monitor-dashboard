@@ -5,6 +5,8 @@ import logging
 import schedule
 from collect_avail_metrics import service_status_list as avail
 from collect_freshness_metrics import service_status_list as fresh
+from athena_queries import query_results as api_zips
+from athena_queries import send_alert as api_count_alert
 
 log = logging.getLogger(__name__)
 out_hdlr = logging.StreamHandler(sys.stdout)
@@ -33,14 +35,20 @@ def write_to_json():
             for item in fresh():
                 f.write("# HELP freshness_of_"+item['name']+ " to check data freshness \n")
                 f.write("dq_"+item['name']+"_freshness " +str(item['status'])+ "\n")
+            print("The PARSED Zip file stats are: ",api_zips())
+            for item in api_zips():
+                f.write("# HELP PARSED API "+item['name']+" \n")
+                f.write("dq_api_pasred_"+item['name']+" "+str(item['query_result'])+ "\n")
         log.info("File created")
     except Exception as e:
         log.error(e)
 
+
 def main():
     log.info("Starting Scheduler......")
-    schedule.every(5).minutes.at(":00").do(write_to_json)
-    # schedule.every(5).minutes.at(":00").do(retreive_fresh)
+    schedule.every(10).minutes.at(":00").do(write_to_json)
+    # schedule.every(10).minutes.at(":02").do(retrive_api_zips)
+    schedule.every().day.at("08:37").do(api_count_alert)
     while True:
         schedule.run_pending()
         time.sleep(1)

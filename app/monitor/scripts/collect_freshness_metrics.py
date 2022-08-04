@@ -6,13 +6,7 @@ import psycopg2
 import datetime
 import requests
 import xml.etree.ElementTree as et
-# from botocore.config import Config
-#
-# CONFIG = Config(
-#     retries=dict(
-#         max_attempts=20
-#     )
-# )
+
 
 #Setting log to STOUT
 log = logging.getLogger(__name__)
