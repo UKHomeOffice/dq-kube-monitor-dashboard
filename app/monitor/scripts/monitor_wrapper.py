@@ -38,7 +38,7 @@ def write_to_json():
             print("The PARSED Zip file stats are: ",api_zips())
             for item in api_zips():
                 f.write("# HELP PARSED API "+item['name']+" \n")
-                f.write("dq_api_pasred_"+item['name']+" "+str(item['query_result'])+ "\n")
+                f.write("dq_api_pasred_"+item['name']+" "+item['query_result']+ "\n")
         log.info("File created")
     except Exception as e:
         log.error(e)
