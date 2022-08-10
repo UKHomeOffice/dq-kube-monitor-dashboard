@@ -24,10 +24,6 @@ conn_parameters = {
     "path": "workbench-bastion"
 }
 
-day = datetime.datetime.today()
-prevday = day - datetime.timedelta(days=1)
-prevday = prevday.strftime("%Y%m%d")
-
 def get_ssm_parameters(param_name_list,conn_parameters):
     """
     Returns parameter values from AWS SSM
@@ -107,6 +103,10 @@ def athena_query(client,query,conn_parameters):
     """
     Query the internal_tableau Athena DB
     """
+    day = datetime.datetime.today()
+    prevday = day - datetime.timedelta(days=1)
+    prevday = prevday.strftime("%Y%m%d")
+    
     try:
         execution = client.start_query_execution(
         QueryString=query,
@@ -142,8 +142,8 @@ def obtain_zip_count(client,dayformat):
     """
     athena_query_results.clear()
     query_list = [
-        {"name": "no_zips", "query": "select count(distinct file_name) from api_record_level_score_prod.internal_storage where file_name like '%PARSED_"+prevday+"%'"},
-        {"name": "last_zip", "query": "select max(distinct file_name) from api_record_level_score_prod.internal_storage where file_name like '%PARSED_"+prevday+"%'"}
+        {"name": "no_zips", "query": "select count(distinct file_name) from api_record_level_score_prod.internal_storage where file_name like '%PARSED_"+dayformat+"%'"},
+        {"name": "last_zip", "query": "select max(distinct file_name) from api_record_level_score_prod.internal_storage where file_name like '%PARSED_"+dayformat+"%'"}
     ]
 
     for item in query_list:
