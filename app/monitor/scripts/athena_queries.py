@@ -24,15 +24,9 @@ conn_parameters = {
     "path": "workbench-bastion"
 }
 
-def get_previous_day():
-    """
-    Obtain the timestamp of the Previous day
-    """
     day = datetime.datetime.today()
     prevday = day - datetime.timedelta(days=1)
     prevday = prevday.strftime("%Y%m%d")
-
-    return prevday
 
 def get_ssm_parameters(param_name_list,conn_parameters):
     """
@@ -176,8 +170,6 @@ def query_results():
 
     client = session.client('athena', region_name=conn_parameters["region"])
 
-    get_previous_day()
-
     obtain_zip_count(client,prevday)
 
     return athena_query_results
@@ -197,8 +189,6 @@ def send_alert():
     )
 
     client = session.client('athena', region_name=conn_parameters["region"])
-
-    get_previous_day()
 
     obtain_zip_count(client,prevday)
 
