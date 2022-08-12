@@ -24,9 +24,9 @@ conn_parameters = {
     "path": "workbench-bastion"
 }
 
-    day = datetime.datetime.today()
-    prevday = day - datetime.timedelta(days=1)
-    prevday = prevday.strftime("%Y%m%d")
+day = datetime.datetime.today()
+prevday = day - datetime.timedelta(days=1)
+prevday = prevday.strftime("%Y%m%d")
 
 def get_ssm_parameters(param_name_list,conn_parameters):
     """
