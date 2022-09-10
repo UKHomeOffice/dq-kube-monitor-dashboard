@@ -12,7 +12,7 @@ platform:
   os: linux
   arch: amd64
 
-  x-anchors:
+x-anchors:
   rotate-app-user-aws-key: &rotate-app-user-aws-key
     # Retrive vault secrets
     - vault read aws_dacc_dq/creds/drone > aws_creds.json
@@ -40,7 +40,7 @@ platform:
     - echo "export AWS_ACCESS_KEY_ID=$(echo -n $NEW_AWS_ACCESS_KEY_ID | base64)" > new_iam_secret.sh
     - echo "export AWS_SECRET_ACCESS_KEY=$(echo -n $NEW_AWS_SECRET_ACCESS_KEY | base64)" >> new_iam_secret.sh
 
-    deploy-to-k8s: &deploy-to-k8s
+  deploy-to-k8s: &deploy-to-k8s
     - source new_iam_secret.sh
     - kd --delete --file deployment.yml
     - "kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml \
