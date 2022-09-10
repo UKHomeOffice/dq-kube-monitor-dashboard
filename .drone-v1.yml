@@ -1,4 +1,9 @@
 ---
+global-variables:
+  vault-image: &vault-image docker.digital.homeoffice.gov.uk/dq/dq-vault-awscli:1.43
+  trivy-image: &trivy-image quay.io/ukhomeofficedigital/trivyscanner:master
+  kd-image: &kd-image quay.io/ukhomeofficedigital/kd
+
 kind: pipeline
 name: default
 type: kubernetes
@@ -7,8 +12,61 @@ platform:
   os: linux
   arch: amd64
 
+x-anchors:
+  rotate-app-user-aws-key: &rotate-app-user-aws-key
+    # Retrive vault secrets
+    - vault read aws_dacc_dq/creds/drone > aws_creds.json
+    - export LEASE_ID=$(cat aws_creds.json | grep lease_id | awk -F ' ' '{print $2}')
+    # Update the token TTL to 10mins
+    - vault lease renew -increment=600 $${LEASE_ID}
+    # Get the AWS credentials
+    - export AWS_ACCESS_KEY_ID=$(cat aws_creds.json | grep access_key | awk -F ' ' '{print $2}')
+    - export AWS_SECRET_ACCESS_KEY=$(cat aws_creds.json | grep secret_key | awk -F ' ' '{print $2}')
+    - export AWS_DEFAULT_REGION=eu-west-2
+    # Since AWS is eventually consistent we need to sleep a little while so the AWS key is created and made available
+    - sleep 20
+    # get app key id from ssm
+    - export OLD_AWS_ACCESS_KEY_ID=$(aws ssm get-parameters --name $SSM_KEY_ID --query "Parameters[*].{Value:Value}" --with-decryption | grep Value | awk -F ' ' '{print $2}' | tr -d '"')
+    # generate new key & id for app user
+    - aws iam create-access-key --user-name $APP_USER_NAME > new-key.json
+    - export NEW_AWS_ACCESS_KEY_ID=$(cat new-key.json | grep AccessKeyId | awk -F ' ' '{print $2}' | tr -d '"' | tr -d ',')
+    - export NEW_AWS_SECRET_ACCESS_KEY=$(cat new-key.json | grep SecretAccessKey | awk -F ' ' '{print $2}' | tr -d '"' | tr -d ',')
+    # push new key & id to SSM
+    - aws ssm put-parameter --name $SSM_KEY_ID --type "SecureString" --value $NEW_AWS_ACCESS_KEY_ID --overwrite
+    - aws ssm put-parameter --name $SSM_SECURE_KEY --type "SecureString" --value $NEW_AWS_SECRET_ACCESS_KEY --overwrite
+    # delete old iam key &id
+    - aws iam delete-access-key --access-key-id $OLD_AWS_ACCESS_KEY_ID --user-name $APP_USER_NAME
+    # encode new key and id
+    - echo "export AWS_ACCESS_KEY_ID=$(echo -n $NEW_AWS_ACCESS_KEY_ID | base64)" > new_iam_secret.sh
+    - echo "export AWS_SECRET_ACCESS_KEY=$(echo -n $NEW_AWS_SECRET_ACCESS_KEY | base64)" >> new_iam_secret.sh
+
+  deploy-to-k8s: &deploy-to-k8s
+    - source new_iam_secret.sh
+    - kd --delete --file deployment.yml
+    - "kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml \
+        -f network-policy.yml -f deployment.yml  --timeout 5m0s"
+
 steps:
 - name: build_monitor_image
+  pull: if-not-exists
+  image: plugins/docker
+  settings:
+    dockerfile: app/monitor/Dockerfile
+    force_tag: true
+    registry: quay.io
+    repo: quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard
+    tags:
+    - ${DRONE_COMMIT_SHA}
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+    DOCKER_USERNAME:
+      from_secret: docker_username
+  when:
+    event:
+    - push
+
+- name: build_master
   pull: if-not-exists
   image: plugins/docker
   settings:
@@ -28,10 +86,12 @@ steps:
   when:
     event:
     - push
+    branch:
+    - master    
 
 - name: trivy_scan
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/trivyscanner:master
+  image: *trivy-image
   commands:
   - trivy --version
   - trivy image --ignore-unfixed --exit-code 1 --no-progress quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard:${DRONE_COMMIT_SHA}
@@ -42,44 +102,46 @@ steps:
     event:
     - push
 
+- name: rotate_aws_keys_notprod
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    *rotate-app-user-aws-key
+  environment:
+    SSM_KEY_ID: monitor-user-id-apps-notprod-dq
+    SSM_SECURE_KEY: monitor-user-key-apps-notprod-dq
+    APP_USER_NAME:  iam-user-monitor-apps-notprod-dq
+    ENV: notprod
+    VAULT_ADDR:
+      from_secret: VAULT_ADDR_NOTPROD
+    VAULT_TOKEN:
+      from_secret: VAULT_TOKEN_NOTPROD
+  when:
+    event:
+      - push
+
 - name: deploy_to_notprod
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/kd
+  image: *kd-image
   commands:
-  # - export ENV=$$ENV
-  - export FMS_KEY=$$NOTPROD_FMS_KEY
-  - export FMS_CERT=$$NOTPROD_FMS_CERT
-  - export TAB_ADMIN_PWD=$$NOTPROD_TAB_ADMIN_PWD
-  - export KUBE_TOKEN=$$NOTPROD_KUBE_TOKEN
-  - export KUBE_SERVER=$$NOTPROD_KUBE_SERVER
-  - export AWS_ACCESS_KEY_ID=$$NOTPROD_AWS_ACCESS_KEY_ID
-  - export AWS_SECRET_ACCESS_KEY=$$NOTPROD_AWS_SECRET_ACCESS_KEY
-  - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
-  - export SLACK_URL=$$NOTPROD_SLACK_URL
-  - kd --delete --file deployment.yml
-  - "kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml \
-      -f network-policy.yml -f deployment.yml  --timeout 5m0s"
+    *deploy-to-k8s
   environment:
     AWS_DEFAULT_REGION:
       from_secret: AWS_DEFAULT_REGION
     ENV: notprod
     INSECURE_SKIP_TLS_VERIFY: true
     KUBE_NAMESPACE: dq-apps-notprod
-    NOTPROD_AWS_ACCESS_KEY_ID:
-      from_secret: NOTPROD_AWS_ACCESS_KEY_ID
-    NOTPROD_AWS_SECRET_ACCESS_KEY:
-      from_secret: NOTPROD_AWS_SECRET_ACCESS_KEY
-    NOTPROD_FMS_CERT:
+    FMS_CERT:
       from_secret: NOTPROD_FMS_CERT
-    NOTPROD_FMS_KEY:
+    FMS_KEY:
       from_secret: NOTPROD_FMS_KEY
-    NOTPROD_KUBE_SERVER:
+    KUBE_SERVER:
       from_secret: NOTPROD_KUBE_SERVER
-    NOTPROD_KUBE_TOKEN:
+    KUBE_TOKEN:
       from_secret: NOTPROD_KUBE_TOKEN
-    NOTPROD_TAB_ADMIN_PWD:
+    TAB_ADMIN_PWD:
       from_secret: NOTPROD_TAB_ADMIN_PWD
-    NOTPROD_SLACK_URL:
+    SLACK_URL:
       from_secret: NOTPROD_SLACK_URL
     VOLUME_SIZE: 10Gi
     HAPROXY_SIDEKICK_VERSION: b31
@@ -87,44 +149,50 @@ steps:
     event:
     - push
 
+- name: rotate_aws_keys_prod
+  pull: if-not-exists
+  image: *vault-image
+  commands:
+    *rotate-app-user-aws-key
+  environment:
+    SSM_KEY_ID: monitor-user-id-apps-prod-dq
+    SSM_SECURE_KEY: monitor-user-key-apps-prod-dq
+    APP_USER_NAME: iam-user-monitor-apps-prod-dq
+    ENV: prod
+    VAULT_ADDR:
+      from_secret: VAULT_ADDR_PROD
+    VAULT_TOKEN:
+      from_secret: VAULT_TOKEN_PROD
+  when:
+    branch:
+    - master
+    event:
+    - promote
+    target:
+    - production
+
 - name: deploy_to_prod
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/kd
+  image: *kd-image
   commands:
-  # - export ENV=$$ENV
-  - export FMS_KEY=$$PROD_FMS_KEY
-  - export FMS_CERT=$$PROD_FMS_CERT
-  - export TAB_ADMIN_PWD=$$PROD_TAB_ADMIN_PWD
-  - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
-  - export KUBE_SERVER=$$PROD_KUBE_SERVER
-  - export AWS_ACCESS_KEY_ID=$$PROD_AWS_ACCESS_KEY_ID
-  - export AWS_SECRET_ACCESS_KEY=$$PROD_AWS_SECRET_ACCESS_KEY
-  - export AWS_DEFAULT_REGION=$$AWS_DEFAULT_REGION
-  - export SLACK_URL=$$PROD_SLACK_URL
-  - kd --delete --file deployment.yml
-  - "kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml \
-      -f network-policy.yml -f deployment.yml --timeout 5m0s"
+    *deploy-to-k8s
   environment:
     AWS_DEFAULT_REGION:
       from_secret: AWS_DEFAULT_REGION
     ENV: prod
     INSECURE_SKIP_TLS_VERIFY: true
     KUBE_NAMESPACE: dq-apps
-    PROD_AWS_ACCESS_KEY_ID:
-      from_secret: PROD_AWS_ACCESS_KEY_ID
-    PROD_AWS_SECRET_ACCESS_KEY:
-      from_secret: PROD_AWS_SECRET_ACCESS_KEY
-    PROD_FMS_CERT:
+    FMS_CERT:
       from_secret: PROD_FMS_CERT
-    PROD_FMS_KEY:
+    FMS_KEY:
       from_secret: PROD_FMS_KEY
-    PROD_KUBE_SERVER:
+    KUBE_SERVER:
       from_secret: PROD_KUBE_SERVER
-    PROD_KUBE_TOKEN:
+    KUBE_TOKEN:
       from_secret: PROD_KUBE_TOKEN
-    PROD_SLACK_URL:
+    SLACK_URL:
       from_secret: PROD_SLACK_URL
-    PROD_TAB_ADMIN_PWD:
+    TAB_ADMIN_PWD:
       from_secret: PROD_TAB_ADMIN_PWD
     VOLUME_SIZE: 10Gi
     HAPROXY_SIDEKICK_VERSION: b31
@@ -136,28 +204,29 @@ steps:
     target:
     - production
 
-- name: delete_prod
+- name: renew-vault-tokens
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/kd
+  image: *vault-image
   commands:
-  - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
-  - export KUBE_SERVER=$$PROD_KUBE_SERVER
-  - "kd --delete --file deployment.yml --file pvc.yml\n"
+    # Renew NotProd Drone Vault Token
+    - export VAULT_TOKEN=$${VAULT_TOKEN_NOTPROD}
+    - export VAULT_ADDR=$${VAULT_ADDR_NOTPROD}
+    - vault token renew > /dev/null
+    # Renew Prod Drone Vault Token
+    - export VAULT_TOKEN=$${VAULT_TOKEN_PROD}
+    - export VAULT_ADDR=$${VAULT_ADDR_PROD}
+    - vault token renew > /dev/null
   environment:
-    ENV: prod
-    INSECURE_SKIP_TLS_VERIFY: true
-    KUBE_NAMESPACE: dq-apps
-    PROD_KUBE_SERVER:
-      from_secret: PROD_KUBE_SERVER
-    PROD_KUBE_TOKEN:
-      from_secret: PROD_KUBE_TOKEN
-    VOLUME_SIZE: 10Gi
+    VAULT_ADDR_NOTPROD:
+      from_secret: VAULT_ADDR_NOTPROD
+    VAULT_TOKEN_NOTPROD:
+      from_secret: VAULT_TOKEN_NOTPROD
+    VAULT_ADDR_PROD:
+      from_secret: VAULT_ADDR_PROD
+    VAULT_TOKEN_PROD:
+      from_secret: VAULT_TOKEN_PROD
   when:
-    branch:
-    - master
     event:
-    - promote
-    target:
-    - delete
-
-...
+      - cron
+    cron:
+      - renew-vault-tokens
