@@ -44,7 +44,7 @@ x-anchors:
     - source new_iam_secret.sh
     - kd --delete --file deployment.yml
     - "kd -f pvc.yml -f service.yml -f secrets.yml -f aws_secrets.yml \
-        -f network-policy.yml -f deployment.yml  --timeout 5m0s"
+        -f network-policy.yml -f deployment.yml"
 
 steps:
 - name: build_monitor_image
