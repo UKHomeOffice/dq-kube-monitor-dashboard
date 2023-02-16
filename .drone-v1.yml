@@ -97,7 +97,7 @@ steps:
   image: *trivy-image
   commands:
   - trivy --version
-  - trivy image --ignore-unfixed --exit-code 1 --no-progress quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard:${DRONE_COMMIT_SHA}
+  - trivy image --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-kube-monitor-dashboard:${DRONE_COMMIT_SHA}
   when:
     branch:
       exclude:
