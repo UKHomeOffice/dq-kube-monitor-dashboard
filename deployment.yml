@@ -3,6 +3,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dq-monitor
+  annotations:
+    environment: {{ .ENV }}
+    {{ if eq .ENV "notprod" }}downscaler/uptime: Mon-Fri 07:00-18:00 Europe/London{{ end }}
 spec:
   replicas: 1
   selector:
