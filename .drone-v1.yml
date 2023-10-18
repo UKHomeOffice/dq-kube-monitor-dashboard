@@ -147,7 +147,7 @@ steps:
     SLACK_URL:
       from_secret: NOTPROD_SLACK_URL
     VOLUME_SIZE: 10Gi
-    HAPROXY_SIDEKICK_VERSION: b31
+    HAPROXY_SIDEKICK_VERSION: b80
   when:
     event:
     - push
@@ -198,7 +198,7 @@ steps:
     TAB_ADMIN_PWD:
       from_secret: PROD_TAB_ADMIN_PWD
     VOLUME_SIZE: 10Gi
-    HAPROXY_SIDEKICK_VERSION: b31
+    HAPROXY_SIDEKICK_VERSION: b80
   when:
     branch:
     - master
