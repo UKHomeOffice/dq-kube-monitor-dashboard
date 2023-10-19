@@ -140,7 +140,7 @@ spec:
           - name: HOST
             value: '10.3.0.12'
           - name: PORT
-            value: '8081'
+            value: '8088'
         ports:
           - containerPort: 5000
       - name: opensslsidekick-fms
