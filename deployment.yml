@@ -18,7 +18,7 @@ spec:
         name: dq-monitor
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "8000"
+        prometheus.io/port: "{{ .CONTAINER_PORT }}"
         prometheus.io/path: "/dq-monitor/prometheus"
     spec:
       securityContext:
