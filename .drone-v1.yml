@@ -148,6 +148,36 @@ steps:
       from_secret: NOTPROD_SLACK_URL
     CONTAINER_PORT:
       from_secret: CONTAINER_PORT
+    EXTTAB_PORT:
+      from_secret: EXTTAB_PORT      
+    EXTTAB_EXPOSE_PORT:
+      from_secret: EXTTAB_EXPOSE_PORT
+    EXTTAB_IP:
+      from_secret: EXTTAB_IP
+    TABRDS_PORT:
+      from_secret: TABRDS_PORT
+    TABRDS_EXPOSE_PORT:
+      from_secret: TABRDS_EXPOSE_PORT
+    TABRDS_IP:
+      from_secret: TABRDS_IP
+    GAIT_PORT:
+      from_secret: GAIT_PORT
+    GAIT_EXPOSE_PORT:
+      from_secret: GAIT_EXPOSE_PORT
+    GAIT_IP:
+      from_secret: GAIT_IP
+    FMS_PORT:
+      from_secret: FMS_PORT
+    FMS_EXPOSE_PORT:
+      from_secret: FMS_EXPOSE_PORT
+    FMS_IP:
+      from_secret: FMS_IP
+    TAB_PORT:
+      from_secret: TAB_PORT
+    TAB_EXPOSE_PORT:
+      from_secret: TAB_EXPOSE_PORT
+    TAB_IP:
+      from_secret: TAB_IP
     VOLUME_SIZE: 10Gi
     HAPROXY_SIDEKICK_VERSION: b80
   when:
@@ -201,6 +231,36 @@ steps:
       from_secret: CONTAINER_PORT  
     TAB_ADMIN_PWD:
       from_secret: PROD_TAB_ADMIN_PWD
+    EXTTAB_PORT:
+      from_secret: EXTTAB_PORT      
+    EXTTAB_EXPOSE_PORT:
+      from_secret: EXTTAB_EXPOSE_PORT
+    EXTTAB_IP:
+      from_secret: EXTTAB_IP
+    TABRDS_PORT:
+      from_secret: TABRDS_PORT
+    TABRDS_EXPOSE_PORT:
+      from_secret: TABRDS_EXPOSE_PORT
+    TABRDS_IP:
+      from_secret: TABRDS_IP
+    GAIT_PORT:
+      from_secret: GAIT_PORT
+    GAIT_EXPOSE_PORT:
+      from_secret: GAIT_EXPOSE_PORT
+    GAIT_IP:
+      from_secret: GAIT_IP
+    FMS_PORT:
+      from_secret: FMS_PORT
+    FMS_EXPOSE_PORT:
+      from_secret: FMS_EXPOSE_PORT
+    FMS_IP:
+      from_secret: FMS_IP
+    TAB_PORT:
+      from_secret: TAB_PORT
+    TAB_EXPOSE_PORT:
+      from_secret: TAB_EXPOSE_PORT
+    TAB_IP:
+      from_secret: TAB_IP      
     VOLUME_SIZE: 10Gi
     HAPROXY_SIDEKICK_VERSION: b80
   when:
