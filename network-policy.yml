@@ -13,4 +13,4 @@ spec:
           name: ingress-external
     ports:
     - protocol: TCP
-      port: 8000
+      port: {{ .CONTAINER_PORT }}
