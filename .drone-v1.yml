@@ -146,6 +146,8 @@ steps:
       from_secret: NOTPROD_TAB_ADMIN_PWD
     SLACK_URL:
       from_secret: NOTPROD_SLACK_URL
+    CONTAINER_PORT:
+      from_secret: CONTAINER_PORT
     VOLUME_SIZE: 10Gi
     HAPROXY_SIDEKICK_VERSION: b80
   when:
@@ -195,6 +197,8 @@ steps:
       from_secret: PROD_KUBE_TOKEN
     SLACK_URL:
       from_secret: PROD_SLACK_URL
+    CONTAINER_PORT:
+      from_secret: CONTAINER_PORT  
     TAB_ADMIN_PWD:
       from_secret: PROD_TAB_ADMIN_PWD
     VOLUME_SIZE: 10Gi
