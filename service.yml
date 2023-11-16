@@ -8,7 +8,7 @@ metadata:
 spec:
   ports:
   - name: prometheus-web
-    port: 8000
-    targetPort: 8000
+    port: {{ .CONTAINER_PORT }}
+    targetPort: {{ .CONTAINER_PORT }}
   selector:
     name: dq-monitor

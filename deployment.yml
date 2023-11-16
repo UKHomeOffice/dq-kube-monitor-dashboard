@@ -18,7 +18,7 @@ spec:
         name: dq-monitor
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "8000"
+        prometheus.io/port: "{{ .CONTAINER_PORT }}"
         prometheus.io/path: "/dq-monitor/prometheus"
     spec:
       securityContext:
@@ -121,7 +121,7 @@ spec:
                 name: dq-monitor-secrets
                 key: SLACK_URL
         ports:
-          - containerPort: 8000
+          - containerPort: {{ .CONTAINER_PORT }}
         volumeMounts:
           - mountPath: /APP/share
             name: dq-monitor-storage
@@ -136,13 +136,13 @@ spec:
           runAsUser: 1000
         env:
           - name: EXPOSED_PORT
-            value: '5000'
+            value: '{{ .TAB_EXPOSE_PORT }}'
           - name: HOST
-            value: '10.3.0.12'
+            value: '{{ .TAB_IP }}'
           - name: PORT
-            value: '8081'
+            value: '{{ .TAB_PORT }}'
         ports:
-          - containerPort: 5000
+          - containerPort: {{ .TAB_EXPOSE_PORT }}
       - name: opensslsidekick-fms
         image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:{{ .HAPROXY_SIDEKICK_VERSION }}
         imagePullPolicy: Always
@@ -151,13 +151,13 @@ spec:
           runAsUser: 1000
         env:
           - name: EXPOSED_PORT
-            value: '5001'
+            value: '{{ .FMS_EXPOSE_PORT }}'
           - name: HOST
-            value: '10.3.0.11'
+            value: '{{ .FMS_IP }}'
           - name: PORT
-            value: '5431'
+            value: '{{ .FMS_PORT }}'
         ports:
-          - containerPort: 5001
+          - containerPort: {{ .FMS_EXPOSE_PORT }}
       - name: opensslsidekick-gait
         image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:{{ .HAPROXY_SIDEKICK_VERSION }}
         imagePullPolicy: Always
@@ -166,13 +166,13 @@ spec:
           runAsUser: 1000
         env:
           - name: EXPOSED_PORT
-            value: '5002'
+            value: '{{ .GAIT_EXPOSE_PORT }}'
           - name: HOST
-            value: '10.3.0.11'
+            value: '{{ .GAIT_IP }}'
           - name: PORT
-            value: '8087'
+            value: '{{ .GAIT_PORT }}'
         ports:
-          - containerPort: 5002
+          - containerPort: {{ .GAIT_EXPOSE_PORT }}
       - name: opensslsidekick-tab-rds
         image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:{{ .HAPROXY_SIDEKICK_VERSION }}
         imagePullPolicy: Always
@@ -181,13 +181,13 @@ spec:
           runAsUser: 1000
         env:
           - name: EXPOSED_PORT
-            value: '5003'
+            value: '{{ .TABRDS_EXPOSE_PORT }}'
           - name: HOST
-            value: '10.3.0.11'
+            value: '{{ .TABRDS_IP }}'
           - name: PORT
-            value: '8084'
+            value: '{{ .TABRDS_PORT }}'
         ports:
-          - containerPort: 5003
+          - containerPort: {{ .TABRDS_EXPOSE_PORT }}
       - name: opensslsidekick-exttab
         image: quay.io/ukhomeofficedigital/dq-haproxy-openssl-sidekick:{{ .HAPROXY_SIDEKICK_VERSION }}
         imagePullPolicy: Always
@@ -196,13 +196,13 @@ spec:
           runAsUser: 1000
         env:
           - name: EXPOSED_PORT
-            value: '5004'
+            value: '{{ .EXTTAB_EXPOSE_PORT }}'
           - name: HOST
-            value: '10.3.0.11'
+            value: '{{ .EXTTAB_IP }}'
           - name: PORT
-            value: '8080'
+            value: '{{ .EXTTAB_PORT }}'
         ports:
-          - containerPort: 5004
+          - containerPort: {{ .EXTTAB_EXPOSE_PORT }}
       volumes:
         - name: dq-monitor-storage
           persistentVolumeClaim:
