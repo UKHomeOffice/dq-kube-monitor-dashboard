@@ -179,7 +179,7 @@ def obtain_gait_fresh():
         dic_item = { 'name': "gait_data" , 'status': gait_fresh_status}
         fresh_dic_list.append(dic_item)
         log.info('Obtained the Freshness status of GAIT data')
-        dbcur.close()
+        conn.close()
 
     except Exception as e:
         # log.error("there is an error connecting to fms db: ",err)
