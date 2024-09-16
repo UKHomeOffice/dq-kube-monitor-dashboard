@@ -1,4 +1,4 @@
-FROM python:3.12.0b3-alpine3.18
+FROM python:3.13.0b3-alpine3.20
 
 LABEL maintainer="dqdevops@digital.homeoffice.gov.uk"
 
@@ -28,7 +28,7 @@ RUN adduser -D -H 1000 && chown -R 1000 /APP
 RUN chmod -R +x /APP/scripts
 
 RUN pip install --no-cache-dir --upgrade pip==24.1.1 && pip install boto3 schedule requests psycopg2
-RUN pip install -U setuptools==70.0.0
+
 EXPOSE 8000
 
 USER ${USERMAP_UID}
