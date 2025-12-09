@@ -27,8 +27,8 @@ RUN adduser -D -H 1000 && chown -R 1000 /APP
 
 RUN chmod -R +x /APP/scripts
 
-RUN pip install --no-cache-dir --upgrade pip==24.1.1 && pip install boto3 schedule requests psycopg2
-RUN pip install -U setuptools==70.0.0
+RUN pip install --no-cache-dir --upgrade pip==25.3 && pip install boto3 schedule requests psycopg2
+RUN pip install -U setuptools==78.1.1
 
 EXPOSE 8000
 
