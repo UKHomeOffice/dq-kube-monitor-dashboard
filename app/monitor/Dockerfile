@@ -28,7 +28,7 @@ RUN adduser -D -H 1000 && chown -R 1000 /APP
 RUN chmod -R +x /APP/scripts
 
 RUN pip install --no-cache-dir --upgrade pip==25.3 && pip install boto3 schedule requests psycopg2 urllib3
-RUN pip install -U setuptools==78.1.1
+RUN pip install -U setuptools
 
 EXPOSE 8000
 
