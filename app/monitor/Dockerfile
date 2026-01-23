@@ -28,7 +28,10 @@ RUN adduser -D -H 1000 && chown -R 1000 /APP
 RUN chmod -R +x /APP/scripts
 
 RUN pip install --no-cache-dir --upgrade pip==25.3 && pip install boto3 schedule requests psycopg2 urllib3
-RUN pip install -U setuptools
+# Upgrade force wheel to latest (or pin exactly to 0.46.2+)
+RUN pip install --no-cache-dir -U pip \
+    && pip install --no-cache-dir --upgrade --force-reinstall "wheel==0.46.2" setuptools \
+    && pip show wheel
 
 EXPOSE 8000
 
