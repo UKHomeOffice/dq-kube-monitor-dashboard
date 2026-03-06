@@ -17,7 +17,8 @@ postgresql-dev \
 build-base \
 bash \
 linux-headers \
-pcre-dev
+pcre-dev \
+sqlite-libs
 
 RUN mkdir -p /APP/scripts
 
@@ -27,7 +28,7 @@ RUN adduser -D -H 1000 && chown -R 1000 /APP
 
 RUN chmod -R +x /APP/scripts
 
-RUN pip install --no-cache-dir --upgrade pip==25.3 && pip install boto3 schedule requests psycopg2 urllib3
+RUN pip install --no-cache-dir --upgrade pip==26.0 && pip install boto3 schedule requests psycopg2 urllib3
 # Upgrade force wheel to latest (or pin exactly to 0.46.2+)
 RUN pip install --no-cache-dir -U pip \
     && pip install --no-cache-dir --upgrade --force-reinstall "wheel==0.46.2" setuptools \
