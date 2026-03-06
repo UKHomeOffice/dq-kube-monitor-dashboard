@@ -1,4 +1,4 @@
-FROM python:3.12.0b3-alpine3.18
+FROM python:3.12-alpine
 
 LABEL maintainer="dqdevops@digital.homeoffice.gov.uk"
 
