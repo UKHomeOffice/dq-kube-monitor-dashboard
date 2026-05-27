@@ -179,7 +179,7 @@ steps:
     TAB_IP:
       from_secret: TAB_IP
     VOLUME_SIZE: 10Gi
-    HAPROXY_SIDEKICK_VERSION: b87
+    HAPROXY_SIDEKICK_VERSION: b89
   when:
     event:
     - push
@@ -262,7 +262,7 @@ steps:
     TAB_IP:
       from_secret: TAB_IP      
     VOLUME_SIZE: 10Gi
-    HAPROXY_SIDEKICK_VERSION: b87
+    HAPROXY_SIDEKICK_VERSION: b89
   when:
     branch:
     - master
