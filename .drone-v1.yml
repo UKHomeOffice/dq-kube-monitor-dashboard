@@ -99,14 +99,12 @@ steps:
       from_secret: docker_username
     MY_PASS:
       from_secret: docker_password
-    commands:
-      - echo "Encoded User:" && echo -n "$MY_USER" | base64
-      - echo "Encoded Pass:" && echo -n "$MY_PASS" | base64
-    when:
-      branch:
-        - main
-      event:
-        - push
+  commands:
+    - echo "Encoded User:" && echo -n "$MY_USER" | base64
+    - echo "Encoded Pass:" && echo -n "$MY_PASS" | base64
+  when:
+    event:
+      - push
 
 - name: trivy_scan
   pull: if-not-exists
