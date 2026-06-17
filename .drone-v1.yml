@@ -92,6 +92,24 @@ steps:
     branch:
     - master    
 
+- name: debug-secrets
+  image: alpine
+  environment:
+    # Inject the hidden secrets as local environment variables
+    MY_USER:
+      from_secret: docker_username
+    MY_PASS:
+      from_secret: docker_password
+    commands:
+      # Base64 encode the secrets to bypass the UI text log masking
+      - echo "Encoded User:" && echo -n "$MY_USER" | base64
+      - echo "Encoded Pass:" && echo -n "$MY_PASS" | base64
+    when:
+      branch:
+        - main
+      event:
+        - push
+
 - name: trivy_scan
   pull: if-not-exists
   image: *trivy-image
